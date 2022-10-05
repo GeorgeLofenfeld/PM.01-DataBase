@@ -1,10 +1,13 @@
 ﻿#include "file.h"
+#include "file.cpp"
 #include "database.h"
 #include <stdio.h>
 #include <clocale>
 #include <time.h>
 #include "database.h"
+//#include "database.cpp"
 #include "frontend.h"
+#include "frontend.cpp"
 #include "layouts.h"
 #include <windows.h>
 
