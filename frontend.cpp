@@ -218,9 +218,10 @@ void Table::change_state(Table_states state)
 		}
 		available_keys[0] = 13;
 		available_keys[1] = 8;
+		available_keys[2] =L' ';
 		for (wchar_t i = L'0'; i <=L'z'; i++)
-			available_keys[i-L'0'+2] = i;
-		int first_part = L'z' - L'0' + 3;
+			available_keys[i-L'0'+3] = i;
+		int first_part = L'z' - L'0' + 4;
 		for (wchar_t j = L'À'; j<= L'ÿ'; j++)
 			available_keys[first_part + j - L'À'] = j;
 		available_keys[first_part + L'ÿ' - L'À' + 1] = 0;
