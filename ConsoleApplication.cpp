@@ -30,6 +30,7 @@ int main()
     fd.set_layout(create_menu_layout(), 0);
     fd.set_layout(create_meetings_layout(dbs_p[0]), 1);
     fd.set_layout(create_declarers_layout(dbs_p[1]), 2);
+
     fd.run();
     return 0;
 }

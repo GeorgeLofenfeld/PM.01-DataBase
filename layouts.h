@@ -258,14 +258,14 @@ Layout* create_offences_layout(Database* db) {
     L"ÔÈÎ", L"Íàğóøåíèÿì", L"Íàçàä", L"ÌÈÒÈÍÃ","ÔÈÎ ÍÀĞÓØÈÒÅËß", L"ÍÎĞÌÀÒÈÂÍÛÉ ÀÊÒ", L"ÑÒÀÒÜß È ÏÓÍÊÒ", L"ÎÑÓÆÄÅÍÈÅ ÑÓÄÎÌ"};
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) };
     static Button buttons[8] = {
-        Button(25, 3, names[2], declarers_showing),
-        Button(40, 3, names[3], add_to_declarers_table),
-        Button(60, 3, names[4], declarers_change),
-        Button(80, 3, names[5], declarers_delete),
+        Button(25, 3, names[2]),
+        Button(40, 3, names[3]),
+        Button(60, 3, names[4]),
+        Button(80, 3, names[5]),
         Button(95, 3, names[6]),
         Button(25, 3, names[8]),
         Button(35, 3, names[9]),
-        Button(60, 3, names[10],declarers_main)
+        Button(60, 3, names[10])
     };
     wchar_t table_names[20][128];
     static Int_char_handler ich = Int_char_handler(0, 1);
