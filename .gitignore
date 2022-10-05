@@ -1,0 +1,8 @@
+.vscode
+Debug/
+x64/
+test_db
+*.vcxproj*
+DataBase.sln
+*.swp
+*.rar
