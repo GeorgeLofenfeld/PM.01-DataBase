@@ -140,6 +140,16 @@ void declarers_change(Frontend* fd) {
     table->change_state(Table::choosing_for_changing);
 }
 
+void meetings_search(Frontend* fd) {
+    Table* table = get_meetings_table(fd);
+    table->change_state(Table::searching);
+}
+
+void declarers_search(Frontend* fd) {
+    Table* table = get_declarers_table(fd);
+    table->change_state(Table::searching);
+}
+
 void save(Frontend* fd) {
     Table* table = get_meetings_table(fd, 0);
     table->get_database()->get_base_operator()->save();// get_base_operator един для всех
@@ -183,7 +193,7 @@ Layout* create_meetings_layout(Database *db) {
         Button(40, 3, names[3], add_to_meetings_table),
         Button(60, 3, names[4], meetings_change),
         Button(80, 3, names[5], meetings_delete),
-        Button(95, 3, names[6]),
+        Button(95, 3, names[6],meetings_search),
         Button(25, 3, names[8],meeting_sort),
         Button(35, 3, names[9],meeting_sort),
         Button(45, 3, names[10],meeting_sort),
@@ -225,7 +235,7 @@ Layout* create_declarers_layout(Database* db) {
         Button(40, 3, names[3], add_to_declarers_table),
         Button(60, 3, names[4], declarers_change),
         Button(80, 3, names[5], declarers_delete),
-        Button(95, 3, names[6]),
+        Button(95, 3, names[6], declarers_search),
         Button(25, 3, names[8], declarers_sort),
         Button(35, 3, names[9], declarers_sort),
         Button(60, 3, names[10],declarers_main)

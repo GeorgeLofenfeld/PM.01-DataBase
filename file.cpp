@@ -106,20 +106,12 @@ void Base_operator::save()
 			int base_size = dbs[i]->get_size();
 			fprintf(out, "%s %d\n", bt_to_str(dbs[i]->get_type()), base_size);
 			for (int j = 0; j < base_size; j++) {
-				print(out, dbs[i]->get_record(j)->to_string(), dbs[i]->get_record(j)->get_field_cnt());
+				//print(out, dbs[i]->get_record(j)->to_string(), dbs[i]->get_record(j)->get_field_cnt());
+				fprintf(out, "%ls\n", dbs[i]->get_record(j)->to_line());
 			}
 		}
 		fclose(out);
 	}
-}
-
-void Base_operator::print(FILE* out, wchar_t** str, int str_cnt) {
-	wchar_t line[2560] = L"";
-	for (int i = 0; i < str_cnt; i++) {
-		wcscat(line, str[i]);
-		wcscat(line, L" ");
-	}
-	fprintf(out, "%ls\n", line);
 }
 
 void Base_operator::realloc_array(base_type bt, int cnt)

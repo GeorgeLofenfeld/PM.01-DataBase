@@ -101,13 +101,17 @@ void Table::print()
 	}
 	move_cursor_to(x + (cur_x - x - wcslen(caption)) / 2, y-1);
 	printf("%ls", caption);
+	if (state == searching) {
+		move_cursor_to(x , y - 2);
+		printf("Введите для поиска: %ls", search_string);
+	}
 	for (int i = page_num * row_cnt; i < min_number(row_cnt * (page_num + 1), db->get_size()); i++)
 		if (!(i == chosen_row && state == changing))
 			print_row(i);
 	if (state == adding)
 		print_adding_row(db->get_size() % row_cnt);
 	else if (state == changing)
-		print_adding_row(chosen_row);
+		print_adding_row(chosen_row % row_cnt);
 	print_error_message();
 	move_cursor_to(x, y + row_cnt + 3 + 2);
 	printf("page %d", page_num);
@@ -115,6 +119,14 @@ void Table::print()
 
 void Table::react(wchar_t key)
 {
+	if (key == 27) {
+		handlers[adding_counter]->clear();
+		adding_counter = 0;
+		clear_adding_strings();
+		lt->change_swichable_object(1);
+		change_state(neutral);
+		return;
+	}
 	if (state == adding || state == changing) {
 		Key_handler* kh = handlers[adding_counter];
 		kh->handle(key);
@@ -141,8 +153,15 @@ void Table::react(wchar_t key)
 
 		wcscpy(error_message, kh->get_error_string());
 	}
-	else if (state == neutral)
-	{
+	else if (state == searching) {
+		search_handler.handle(key);
+		wcscpy(search_string, search_handler.get_handled_string());
+		if (search_handler.get_is_finished()) {
+			search_handler.set_is_finished(0);
+			db->search(search_string);
+		}
+	}
+	else if (state == neutral){
 		switch (key)
 		{
 		case 75://left
@@ -170,9 +189,6 @@ void Table::react(wchar_t key)
 		case 80:
 			change_row(1);
 			break;
-		case 27:
-			change_state(neutral);
-			break;
 		case 13:
 			if (state == deleting)
 				delete_chosen_row();
@@ -185,6 +201,18 @@ void Table::react(wchar_t key)
 	}
 
 	
+}
+
+void generate_available_letters(wchar_t** s) {
+	(*s)[0] = 13;
+	(*s)[1] = 8;
+	(*s)[2] = L' ';
+	for (wchar_t i = L'0'; i <= L'z'; i++)
+		(*s)[i - L'0' + 3] = i;
+	int first_part = L'z' - L'0' + 4;
+	for (wchar_t j = L'А'; j <= L'я'; j++)
+		(*s)[first_part + j - L'А'] = j;
+	(*s)[first_part + L'я' - L'А' + 1] = 0;
 }
 
 void Table::change_state(Table_states state)
@@ -211,20 +239,16 @@ void Table::change_state(Table_states state)
 			change_page(db->get_size() / row_cnt - page_num);
 			show_chosen_row = 0;
 		}
-		else if (state == changing) {
+		else
+			change_page(0);
+		if (state == changing) {
 			for (int i = 0; i < col_cnt; i++)
 				wcscpy(adding_strings[i], db->get_record(chosen_row)->to_string()[i]);
 			handlers[0]->set_handled_string(adding_strings[0]);
 		}
-		available_keys[0] = 13;
-		available_keys[1] = 8;
-		available_keys[2] =L' ';
-		for (wchar_t i = L'0'; i <=L'z'; i++)
-			available_keys[i-L'0'+3] = i;
-		int first_part = L'z' - L'0' + 4;
-		for (wchar_t j = L'А'; j<= L'я'; j++)
-			available_keys[first_part + j - L'А'] = j;
-		available_keys[first_part + L'я' - L'А' + 1] = 0;
+		wchar_t esc = 27;
+		generate_available_letters(&available_keys);
+		wcsncat(available_keys, &esc, 1);
 		
 	}
 }

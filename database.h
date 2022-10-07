@@ -13,16 +13,21 @@ class Database_record
 public:
 	virtual void from_string(wchar_t str[20][128]) = 0;
 	virtual wchar_t** to_string() = 0;
+	wchar_t* to_line();
 	Database_record() { malloc_strings(); };
 	~Database_record() { free_strings(); };
 	int get_field_cnt() { return field_cnt; };
 	virtual int compare(Database_record* y, int index) = 0;
+	void find_string(wchar_t* str);
+	int is_string_found() { return string_found; };
 protected:
 	int id=-1;
 	wchar_t** strings;// [20] [128] ;
+	wchar_t line[2560] = L"";
 	void malloc_strings();
 	void free_strings();
 	int field_cnt = 0;
+	int string_found = 0;
 };
 
 class Database_meetings_record : public Database_record
@@ -93,6 +98,7 @@ public:
 	void delete_record(int i);
 	void change_record(int i, wchar_t str[20][128]);
 	void sort_by_index(int index) { quickSort(&base, index, 0, cnt - 1); }
+	void search(wchar_t* str);
 private:
 	int cnt = -1;
 	int list_size = 10;

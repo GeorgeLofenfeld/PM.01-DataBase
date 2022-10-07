@@ -9,6 +9,7 @@ public:
 	~Key_handler() {};
 	virtual void handle(wchar_t c) = 0;
 	int get_is_finished() { return is_finished; }
+	void set_is_finished(int f) { is_finished = f; }
 	virtual wchar_t* get_handled_string() { return handled_string; }
 	virtual void set_handled_string(wchar_t* s) { wcscpy(handled_string, s); };
 	wchar_t* get_error_string() { return error_string; }

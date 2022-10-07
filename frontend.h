@@ -12,8 +12,8 @@ class Key_handler;
 class Layout_object
 {
 public:
-	Layout_object() {};
-	~Layout_object() {};
+	Layout_object() { available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); };
+	~Layout_object() { free(available_keys); };
 	virtual void print() = 0;
 	virtual void react(wchar_t key) = 0;
 	wchar_t* get_available_keys() {return available_keys;}
@@ -37,7 +37,7 @@ protected:
 	int y;
 	int is_swichable = 0;
 	int swiched = 0;
-	wchar_t available_keys[300] = L"";
+	wchar_t *available_keys;
 	Layout* lt;
 	wchar_t caption[100];
 	int visible = 1;
@@ -75,7 +75,7 @@ public:
 class Table : public Layout_object
 {
 public:
-	enum Table_states{adding,deleting,changing, choosing_for_changing,neutral};
+	enum Table_states{adding,deleting,changing, choosing_for_changing,neutral, searching};
 	Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database *db);
 	void set_i_handler(int i, Key_handler* h) { handlers[i] = h; }
 	~Table() {};
@@ -107,6 +107,8 @@ private:
 	int adding_counter = 0;
 	wchar_t adding_strings[20][128];
 	wchar_t error_message[128];
+	Int_char_handler search_handler = Int_char_handler(50,1,1);
+	wchar_t search_string[128];
 };
 class Layout
 {

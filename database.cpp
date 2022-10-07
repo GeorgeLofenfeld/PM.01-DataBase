@@ -27,6 +27,13 @@ void Database::change_record(int i, wchar_t str[20][128])
 	base[i]->from_string(str);
 }
 
+void Database::search(wchar_t* str)
+{
+	for (int i = 0; i < cnt; i++)
+		base[i]->find_string(str);
+	quickSort(&base, -1, 0, cnt - 1);
+}
+
 void Database::add_record(Database_record* rec) {
 	base[cnt] = rec;
 	cnt += 1;
@@ -47,6 +54,22 @@ Database_record** Database::get_data()
 	return base;
 }
 
+
+wchar_t* Database_record::to_line()
+{
+	wchar_t** str = this->to_string();
+	for (int i = 0; i < field_cnt; i++) {
+		wcscat(line, str[i]);
+		wcscat(line, L" ");
+	}
+	return line;
+}
+
+void Database_record::find_string(wchar_t* str)
+{
+	wchar_t* line = this->to_line();
+	string_found = (wcsstr(line, str) != NULL);
+}
 
 void Database_record::malloc_strings()
 {
@@ -108,6 +131,8 @@ int Database_meetings_record::compare(Database_record* y, int index)
 	int date1 = 0, date2 = 0, time1 = 0, time2 = 0;
 	switch (index)
 	{
+	case -1:
+		return this->is_string_found() < y->is_string_found();
 	case 0:
 		date1 = d1.tm_year * 10000 + d1.tm_mon * 100 + d1.tm_mday;
 		date2 = d2.tm_year * 10000 + d2.tm_mon * 100 + d2.tm_mday;
@@ -172,6 +197,8 @@ void Database_declarers_record::from_string(wchar_t str[20][128])
 
 int Database_declarers_record::compare(Database_record* y, int index)
 {
+	if (index == -1)
+		return this->is_string_found() < y->is_string_found();
 	return wcscmp(this->to_string()[index], y->to_string()[index]) >0;
 }
 
@@ -200,10 +227,4 @@ void quickSort(Database_record*** array, int index, int low, int high) {
 		quickSort(array, index, low, pi - 1);
 		quickSort(array, index, pi + 1, high);
 	}
-}
-
-void count_symbols(int **counts, wchar_t** strings) {
-
-
-
 }
