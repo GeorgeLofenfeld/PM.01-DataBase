@@ -146,7 +146,7 @@ Database_record* Base_operator::read(FILE* in, base_type bt) {
 	Database_record* answer = NULL;
 	wchar_t line[2560];
 	wchar_t words[20][128];
-	wchar_t delim[] = L" ";
+	wchar_t delim[] = L"|";
 	fgetws(line, 2560, in);
 	wchar_t* rowstate;
 	line[wcslen(line) - 1] = 0;//remove \n

@@ -60,7 +60,7 @@ wchar_t* Database_record::to_line()
 	wchar_t** str = this->to_string();
 	for (int i = 0; i < field_cnt; i++) {
 		wcscat(line, str[i]);
-		wcscat(line, L" ");
+		wcscat(line, L"|");
 	}
 	return line;
 }
@@ -92,7 +92,7 @@ wchar_t** Database_meetings_record::to_string()
 	swprintf(strings[2], 50, L"%d", declared_cnt);
 	swprintf(strings[3], 50, L"%d", real_cnt);
 	wcscpy(strings[4], address);
-	wcscpy(strings[5], L"0");
+	wcscpy(strings[5], declarers);
 	/*for (int i =0; i <declarers_cnt; i++)
 		swprintf(strings[5] + strlen(strings[5]), "%d_", ids[i]);
 	*/
@@ -110,6 +110,7 @@ void Database_meetings_record::from_string(wchar_t str[20][128])
 	swscanf(str[2], L"%d", &declared_cnt);
 	swscanf(str[3], L"%d", &real_cnt);
 	wcscpy(address, str[4]);
+	wcscpy(declarers, str[5]);
 	/*sscanf(str[4], "%d", &declarers_cnt);
 	int shift = 0;
 	int n = 0;

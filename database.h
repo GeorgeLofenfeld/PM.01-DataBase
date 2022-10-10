@@ -43,8 +43,9 @@ private:
 	wchar_t address[128];
 	int declared_cnt = 0;
 	int real_cnt = 0;
-	int ids[100];
-	int declarers_cnt=0;
+	//int ids[100];
+	//int declarers_cnt=0;
+	wchar_t declarers[128];
 	int permitted=0;
 };
 

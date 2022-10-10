@@ -224,7 +224,7 @@ void Table::change_state(Table_states state)
 		available_keys[2] = 0;
 		show_chosen_row = 0;
 	} else if (state == deleting || state == choosing_for_changing) {
-		chosen_row = 0;
+		chosen_row = page_num * row_cnt;
 		show_chosen_row = 1;
 		available_keys[0] = 75;
 		available_keys[1] = 77;
@@ -239,13 +239,13 @@ void Table::change_state(Table_states state)
 			change_page(db->get_size() / row_cnt - page_num);
 			show_chosen_row = 0;
 		}
-		else
-			change_page(0);
 		if (state == changing) {
 			for (int i = 0; i < col_cnt; i++)
 				wcscpy(adding_strings[i], db->get_record(chosen_row)->to_string()[i]);
 			handlers[0]->set_handled_string(adding_strings[0]);
 		}
+		if (state == searching)
+			change_page(-page_num);
 		wchar_t esc = 27;
 		generate_available_letters(&available_keys);
 		wcsncat(available_keys, &esc, 1);
