@@ -73,6 +73,7 @@ void Database_record::find_string(wchar_t* str)
 
 void Database_record::malloc_strings()
 {
+
 	strings = (wchar_t**)malloc(20 * sizeof(wchar_t*));
 	for (int i = 0; i < 20; i++)
 		strings[i] = (wchar_t*)malloc(128 * sizeof(wchar_t));

@@ -6,9 +6,10 @@
 #include "database.h"
 #include "handler.h"
 
-class Layout;
-class Frontend;
+class Layout; // объявляем заранее, опишем позже. Исключение взаимной рекурсии в layout_object (аналогично с frontend и key_handler)
+class Frontend; 
 class Key_handler;
+
 class Layout_object
 {
 public:
@@ -116,7 +117,7 @@ public:
 	Layout();
 	~Layout() {};
 	void set_screen();
-	void set_frontend(Frontend* fd){ this->fd = fd; };
+	void set_frontend(Frontend* fd){ this->fd = fd; }; // получает ссылку на frontend и записывает в переменную fd
 	Frontend* get_frontend() { return fd; };
 	void set_prev_layout(int idx) { prev_layout_idx = idx; };
 	int get_prev_layout() { return prev_layout_idx; };
@@ -149,20 +150,20 @@ private:
 
 };
 
-class Frontend
+class Frontend // отвечает за отрисовку на экране и взаимодействия с пользователем. Один на всю программу 
 {
 public:
 	Frontend();
 	~Frontend() {};
-	void set_layout(Layout *in, int index);//Добавить новую конфигурацию в список
-	Layout* get_layout(int index) { return layouts[index]; };
+	void set_layout(Layout *in, int index);//Добавить новую конфигурацию в список вёрсток по индексу (*layouts[10])
+	Layout* get_layout(int index) { return layouts[index]; }; // получить по указанному индексу ссылку на layout
 	void run();// основная работа
-	void change_layout(int index);
-	void leave();
+	void change_layout(int index); // сменяет текущий layout
+	void leave(); 
 	void stop();
 private:
 	Key_reader reader;
-	Layout *layouts[10];
+	Layout *layouts[10]; // Список всех вёрсток (меню, таблицы)
 	int current_layout_idx = 0;
 	int exit = 0;
 	void clear_screen();

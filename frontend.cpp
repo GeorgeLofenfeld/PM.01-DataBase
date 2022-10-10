@@ -380,20 +380,20 @@ wchar_t* Layout::get_available_keys()
 
 void Layout::react(wchar_t key)
 {
-	if (chosen_index != -1 && wcschr(objects[chosen_index]->get_available_keys(), key))
-		objects[chosen_index]->react(key);
-	else
+	if (chosen_index != -1 && wcschr(objects[chosen_index]->get_available_keys(), key)) // если объект выбран (индекс не равен -1) и нажатая клавиша доступна для выбранного объекта
+		objects[chosen_index]->react(key); // вызываем реакцию по данному объекту
+	else // если нажатая клавиша недоступна для данного объекта, то значит это либо доступная клавиша для самого layout, либо она доступна для background объекта (например перелистывание страниц в таблице)
 	{
 		switch (key)
 		{
-		case 80://down
-			change_swichable_object(1);
+		case 80: //down
+			change_swichable_object(1); // перелистывание вниз
 			break;
-		case 72://up
-			change_swichable_object(-1);
+		case 72: //up
+			change_swichable_object(-1); // перелистывание вверх
 			break;
-		case 27:
-			fd->leave();
+		case 27: // esc
+			fd->leave(); // вызов метода fd::leave для переключения на предыдущий layout
 			break;
 		default:
 			for (int i = 0; i < object_cnt; i++)
@@ -475,14 +475,14 @@ Frontend::Frontend()
 	reader = Key_reader();
 }
 
-void Frontend::set_layout(Layout *in, int index)
+void Frontend::set_layout(Layout *in, int index) // добавления в текущий frontend нового layout по индексу
 {
 	layouts[index] = in;
-	layouts[index]->set_frontend(this);
+	layouts[index]->set_frontend(this); // передаём в добавленый layout ссылку на объект класса frontend, который вызвал set_layout. Теперь он может с ним взаимодействовать
 }
 
 void Frontend::stop() {
-	exit = 1;
+	exit = 1; // выход из цикла внутри Frontend::run, завершается программа, т.к. цикл внутри метода run завершён (сам  цикл отвечает за работу программы) 
 }
 
 void Frontend::clear_screen()
@@ -491,11 +491,11 @@ void Frontend::clear_screen()
 }
 
 void Frontend::run() {
-	while (!exit) {
-		layouts[current_layout_idx]->set_screen();
-		wchar_t* keys = layouts[current_layout_idx]->get_available_keys();
-		layouts[current_layout_idx]->react(reader.read(keys));
-		clear_screen();
+	while (!exit) { // exit - переменная frontend, пока не выбрана 
+		layouts[current_layout_idx]->set_screen(); // отрисовывает текущую вёрстку на экран
+		wchar_t* keys = layouts[current_layout_idx]->get_available_keys(); // получаем массив доступных кнопок
+		layouts[current_layout_idx]->react(reader.read(keys)); // вызываем реакцию текущего layout, метод read класса reader возвращает полученную кнопку, если она есть среди доступных (у каждой кнопки программы своя реакция)
+		clear_screen(); // после каждой реакции очищаем экран и заполняем на следующей итерации цикла
 	}
 }
 
@@ -508,7 +508,7 @@ void Frontend::change_layout(int index)
 
 void Frontend::leave()
 {
-	current_layout_idx = layouts[current_layout_idx]->get_prev_layout();
+	current_layout_idx = layouts[current_layout_idx]->get_prev_layout(); // При переходе в новый layout мы запомнили предыдущий. Возвращаемся к нему
 }
 
 void Layout_object::deactivate()

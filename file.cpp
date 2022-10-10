@@ -1,7 +1,7 @@
 //#include "file.h"
 #include <stdio.h>
 #include "database.h"
-#include <cwchar>
+#include <wchar.h>
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {
 	this->dbs = dbs;
@@ -150,12 +150,12 @@ Database_record* Base_operator::read(FILE* in, base_type bt) {
 	fgetws(line, 2560, in);
 	wchar_t* rowstate;
 	line[wcslen(line) - 1] = 0;//remove \n
-	wchar_t* ptr = std::wcstok(line, delim,&rowstate);
+	wchar_t* ptr = wcstok_s(line, delim,&rowstate);
 	int cnt = 0;
 	while (ptr != NULL)
 	{
 		wcscpy(words[cnt], ptr);
-		ptr = std::wcstok(NULL, delim,&rowstate);
+		ptr = wcstok_s(NULL, delim,&rowstate);
 		cnt++;
 	}
 
