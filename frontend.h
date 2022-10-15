@@ -10,58 +10,56 @@ class Layout; // объявляем заранее, опишем позже. Исключение взаимной рекурсии в
 class Frontend; 
 class Key_handler;
 
-class Layout_object
+class Layout_object // Абстракция объекта layout'a, все остальные объекты наследуются
 {
 public:
-	Layout_object() { available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); };
+	Layout_object() { available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); }; 
 	~Layout_object() { free(available_keys); };
-	virtual void print() = 0;
-	virtual void react(wchar_t key) = 0;
-	wchar_t* get_available_keys() {return available_keys;}
-	void set_switched(int swiched) { this->swiched = swiched;}
-	int get_swichable() { return is_swichable; }
-	void set_switchable(int is_swichable) { this->is_swichable = is_swichable; save_state();}
-	void set_layout(Layout* lt) {this->lt = lt;}
-	void set_available_keys(wchar_t* keys) {wcscpy(available_keys, keys);}
-	wchar_t* get_caption() { return caption; }
-	void set_visible(int v) { visible = v; save_state();}
+	virtual void print() = 0; // отрисовка
+	virtual void react(wchar_t key) = 0; // реакция на переданную клавишу
+	wchar_t* get_available_keys() {return available_keys;} // возвращает клавиши клавиатуры для данного layout_object
+	void set_switched(int swiched) { this->swiched = swiched;} // setter для понятия выбран ли объект 
+	int get_swichable() { return is_swichable; } // getter, может ли объект быть выбран
+	void set_switchable(int is_swichable) { this->is_swichable = is_swichable; save_state();} // setter для понятия может ли быть выбран объект
+	void set_layout(Layout* lt) {this->lt = lt;} // setter для ссылки на тот layout, которому принадлежит данный layout_object 
+	void set_available_keys(wchar_t* keys) {wcscpy(available_keys, keys);} // setter для available_keys
+	wchar_t* get_caption() { return caption; } // getter для названия данного layout_object 
+	void set_visible(int v) { visible = v; save_state();} // setter для видимости 
 	int get_visible() { return visible;}
-	void deactivate();
-	void activate() {
+	void deactivate(); // описывается в frontend.cpp
+	void activate() { // активация, может реагировать (если умел)
 		is_swichable = saved_state[0];
 		visible = saved_state[1];
 		deactivated = 0;
 	}
 	int get_is_background() {return is_background;}
 protected:
-	int x;
-	int y;
-	int is_swichable = 0;
-	int swiched = 0;
-	wchar_t *available_keys;
-	Layout* lt;
-	wchar_t caption[100];
-	int visible = 1;
-	int saved_state[2]={is_swichable, visible};
-	void save_state() {
+	int x; // координата позиции layout_object
+	int y; // координата позиции layout_object
+	int is_swichable = 0; // флаг отвечающий за то, можно ли выбрать этот layout_object или нельзя (text-table-button, равен нулю только у текста) 
+	int swiched = 0; // если выбран данный layout_object 
+	wchar_t *available_keys; 
+	Layout* lt; // ссылка на тот layout, в котором содержится layout_object 
+	wchar_t caption[100]; // название layout_object'a
+	int visible = 1; // видимость layout_object'a (может реагировать если не видим, остается в списке объектов layout'a)
+	int saved_state[2]={is_swichable, visible}; // перед деактивацией сохраняем состояние 
+	void save_state() { // метод для сохранения состояния
 		saved_state[0] = is_swichable;
 		saved_state[1] = visible;
 	}
-	int deactivated = 0;
-	int is_background = 0;
-	//x - отступ
-	//y - cтрока
+	int deactivated = 0; // скрывает layout_object, больше не может реагировать 
+	int is_background = 0; // если объект может реагировать на кнопки клавиатуры, когда он не выбран (например стрелочки для table вправо-влево)
 };
 
 class Button : public Layout_object
 {
 public:
-	Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd) = nullptr);
+	Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd) = nullptr); // принимает свои графические координаты, принимает свое название, 
 	~Button() {};
-	void print();
-	void react(wchar_t key);
+	void print(); // отрисовка самой кнопки
+	void react(wchar_t key); // реакция на полученную клавишу клавиатуры 
 private:
-	void (*action)(Frontend* fd);//void (*action)(Frontend* fd, LayoutObject )
+	void (*action)(Frontend* fd); // ссылка на функцию, с аргументом ссылки на класс Frontend
 };
 
 class Text : public Layout_object
@@ -76,40 +74,40 @@ public:
 class Table : public Layout_object
 {
 public:
-	enum Table_states{adding,deleting,changing, choosing_for_changing,neutral, searching};
+	enum Table_states{adding,deleting,changing, choosing_for_changing,neutral, searching}; // состояние таблицы может быть только одно из них
 	Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database *db);
-	void set_i_handler(int i, Key_handler* h) { handlers[i] = h; }
+	void set_i_handler(int i, Key_handler* h) { handlers[i] = h; } // установить i-тый handler
 	~Table() {};
-	void print();
-	void react(wchar_t key);
+	void print(); // отрисовать саму таблицу
+	void react(wchar_t key); 
 	void change_state(Table_states state);
 	void change_page(int delta);
 	Database* get_database() { return db; };
 private:
-	Key_handler* handlers[20];
+	Key_handler* handlers[20]; // обработчики столбцов
 	int x = 0;
 	int y = 0;
-	int row_cnt = 20;
-	int col_cnt = 20;
-	wchar_t names[20][128];
-	int sizes[20];
-	int page_num = 0;
-	Database* db = NULL;
-	void print_row(int i);
-	void move_cursor_to_row_col(int row, int col);
-	void print_adding_row(int a_y);
-	void print_error_message();
-	void clear_adding_strings();
-	void change_row(int delta);
-	void delete_chosen_row();
-	int chosen_row = 0;
-	int show_chosen_row = 0;
-	Table_states state = neutral;
-	int adding_counter = 0;
-	wchar_t adding_strings[20][128];
-	wchar_t error_message[128];
-	Int_char_handler search_handler = Int_char_handler(50,1,1);
-	wchar_t search_string[128];
+	int row_cnt = 20; // количество строк на странице
+	int col_cnt = 20; 
+	wchar_t names[20][128]; // названия столбцов
+	int sizes[20]; // размеры столбцов
+	int page_num = 0; // номер текущей страницы
+	Database* db = NULL; // ссылка на БД
+	void print_row(int i); // метод отрисовки строки
+	void move_cursor_to_row_col(int row, int col); // переход на строку
+	void print_adding_row(int a_y); // отрисовка добавляемой строки
+	void print_error_message(); // отрисовка сообщения ошибки
+	void clear_adding_strings(); // очищение буфера для добавляемой строки (adding_strings)
+	void change_row(int delta); // смена выделенной строки во время редактирования, удаления
+	void delete_chosen_row(); // удалить выбранную строку
+	int chosen_row = 0; // индекс выбранной строки
+	int show_chosen_row = 0; // выделение выбранной строки
+	Table_states state = neutral; // состояние таблицы, может принять значение только из перечисления enum Table_states
+	int adding_counter = 0; // номер текущего столбца в добавляемой строке 
+	wchar_t adding_strings[20][128]; // буфер введенных строк для новой записи
+	wchar_t error_message[128]; // для хранения сообщений об какой-либо ошибке 
+	Int_char_handler search_handler = Int_char_handler(50,1,1); // handler Для оработки запроса на поиск 
+	wchar_t search_string[128]; // для хранения запроса на поиск
 };
 class Layout
 {

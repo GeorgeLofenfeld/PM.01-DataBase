@@ -64,4 +64,3 @@ public:
 private:
 	int state = 1;
 };
-

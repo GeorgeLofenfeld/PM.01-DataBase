@@ -59,8 +59,8 @@ wchar_t* Database_record::to_line()
 {
 	wchar_t** str = this->to_string();
 	for (int i = 0; i < field_cnt; i++) {
-		wcscat(line, str[i]);
-		wcscat(line, L"|");
+		wcsncat(line, str[i], 300);
+		wcsncat(line, L"|", 300);
 	}
 	return line;
 }

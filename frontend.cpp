@@ -18,12 +18,12 @@ Text::Text(int x, int y, wchar_t t[])
 {
 	this->x = x;
 	this->y = y;
-	wcscpy(caption, t);
-	is_swichable = 0;
+	wcscpy(caption, t); // текст текста 
+	is_swichable = 0; // текст никогда нельзя выбрать
 }
 
 
-void Text::print()
+void Text::print() 
 {
 	move_cursor_to(x, y);
 	printf("%ls", caption);
@@ -35,31 +35,31 @@ Button::Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd))
 	this->x = x;
 	this->y = y;
 	this->action = action;
-	wcscpy(caption, t);
-	this->set_switchable(1);
-	available_keys[0] = 13;//enter
-	available_keys[1] = 0;//string.h
+	wcscpy(caption, t); // сохранили название (текст кнопки)
+	this->set_switchable(1); // данный объект может быть выбран
+	available_keys[0] = 13; // код enter 
+	available_keys[1] = 0;// для корректной работы string.h (нуль-терминированная строка)
 }
 
 
 void Button::print()
 {
-	move_cursor_to(x, y);
-	if (swiched) {
-		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(hStdOut, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
-		printf("%ls", caption);
-		SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	move_cursor_to(x, y); // перемещаем курсор на данную координату
+	if (swiched) { // если выбран
+		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательная переменная для смены фона 
+		SetConsoleTextAttribute(hStdOut, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY); // смена фона надписи на белый 
+		printf("%ls", caption); // wchar*, выводим название 
+		SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); // смена фона надписи на черный 
 	}
 	else
-		printf("%ls", caption);
+		printf("%ls", caption); // иначе если не выбран, то без смены фона
 		
 }
 
 void Button::react(wchar_t key)
 {
-	if (action != nullptr)
-		action(lt->get_frontend());
+	if (action != nullptr) // если ссылка не пуста
+		action(lt->get_frontend()); // вызываем action от Frontned'a которому принадлежит layout, которому принадлежит layout_object
 }
 
 Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database* db)
@@ -318,7 +318,7 @@ void Table::print_error_message()
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
 
-void Table::clear_adding_strings()
+void Table::clear_adding_strings() // очищение буфера добавляемой строки 
 {
 	for (int i = 0; i < 20; i++)
 		wcscpy(adding_strings[i], L"");
@@ -367,15 +367,15 @@ void Layout::set_screen()
 
 wchar_t* Layout::get_available_keys()
 {
-	static wchar_t keys[1000];
-	wcscpy(keys, available_keys);
-	if (chosen_index != -1) {
-		wcsncat(keys, objects[chosen_index]->get_available_keys(), 300);
+	static wchar_t keys[1000]; // массив для доступных клавиш клавиатуры
+	wcscpy(keys, available_keys); // strcpy(x, y), available_keys - клавиши доступные для самого layout'a
+	if (chosen_index != -1) { // chose_index - индекс выбранного объекта
+		wcsncat(keys, objects[chosen_index]->get_available_keys(), 300); // добавили доступные клавиши для выбранного layout_object
 	}
-	for (int i = 0; i < object_cnt; i++)
-		if (objects[i]->get_is_background() && i != chosen_index)
-			wcscat(keys, objects[i]->get_available_keys());
-	return keys;
+	for (int i = 0; i < object_cnt; i++) // итерируемся по всем объектам данного layout'a
+		if (objects[i]->get_is_background() && i != chosen_index) // get_is_background - метод класса layout_object, может ли данный объект реагировать на клавиши не будучи выбранным
+			wcsncat(keys, objects[i]->get_available_keys(), 300); // добавили доступные клавиши для выбранного layout_object
+	return keys; // возвращаем массив доступных клавиш клавиатуры
 }
 
 void Layout::react(wchar_t key)
@@ -513,11 +513,11 @@ void Frontend::leave()
 
 void Layout_object::deactivate()
 {
-	if (!deactivated) {
-		save_state();
-		if (swiched)
-			lt->change_swichable_object(1);
-		is_swichable = 0, visible = 0;
+	if (!deactivated) { // если не деактивировано
+		save_state(); // сохраняем состояние
+		if (swiched) // если выбрано ( != 0 )
+			lt->change_swichable_object(1); // выбираем другой объект данного layout'a, с которым можно взаимодействвать (не текст)
+		is_swichable = 0, visible = 0; 
 		deactivated = 1;
 	}
 }
