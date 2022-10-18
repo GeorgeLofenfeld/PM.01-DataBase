@@ -18,7 +18,7 @@ void Database::delete_record(int i)
 {
 	Database_record* deleted = base[i];
 	for (int j = i; j < cnt - 1; j++)
-		base[j] = base[j + 1];//memory will be free in Base_operator
+		base[j] = base[j + 1]; //memory will be free in Base_operator
 	cnt -= 1;
 }
 

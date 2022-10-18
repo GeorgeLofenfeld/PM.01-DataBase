@@ -13,7 +13,7 @@ void Int_char_handler::handle(wchar_t c)
 	}
 	else {
 		if (c == 13) {
-			if (wcslen(handled_string) > 0) {//enter key
+			if (wcslen(handled_string) > 0) { //enter key
 				is_finished = 1;
 				wcscpy(error_string, L"");
 			}
@@ -21,7 +21,7 @@ void Int_char_handler::handle(wchar_t c)
 				wcscpy(error_string, L"String can not be empty");
 		}
 		else if (c == 8 && wcslen(handled_string) > 0) { // backspase key
-			handled_string[wcslen(handled_string) - 1] = '\0';//delete last letter
+			handled_string[wcslen(handled_string) - 1] = '\0'; //delete last letter
 			wcscpy(error_string, L"");
 		}
 		else
@@ -30,14 +30,14 @@ void Int_char_handler::handle(wchar_t c)
 }
 
 int is_correct(wchar_t* s, int date_or_time) {
-	if (wcslen(s)==6)
-		return 1;
+	if (wcslen(s) == 6)
+		return 1;  
 	return 0;
 }
 
 void Date_time_handler::handle(wchar_t c)
 {
-	if (date_or_time_handling) {
+	if (date_or_time_handling) { // 
 		if (wcslen(handled_string) < 6 && ('0' <= c) && (c <= '9')) {
 			wcsncat(handled_string, &c, 1);
 			wcscpy(error_string, L"");
@@ -55,7 +55,7 @@ void Date_time_handler::handle(wchar_t c)
 			wcscpy(error_string, L"Incorrect data");
 	}
 	if (c == 8 && wcslen(handled_string) > 0) { // backspase key
-		handled_string[wcslen(handled_string) - 1] = '\0';//delete last letter
+		handled_string[wcslen(handled_string) - 1] = '\0'; //delete last letter
 		wcscpy(error_string, L"");
 	}
 	if (c == 13 && is_correct(handled_string, date_or_time_handling)) {
@@ -94,18 +94,18 @@ wchar_t* Date_time_handler::format(wchar_t* s)
 
 void Bool_handler::handle(wchar_t c)
 {
-	if (c == 72 || c == 80) {//72 KEY_UP 80 KEY_DOWN
-		state = (state + 1) % 2;
-		if(state == 1)
+	if (c == 72 || c == 80) { //72 KEY_UP 80 KEY_DOWN
+		state = (state + 1) % 2; // флаг разрешенности, может иметь значение 1 или 0
+		if (state == 1)
 			wcscpy(handled_string, L"ДА");
 		else
 			wcscpy(handled_string, L"НЕТ");
-		wcscpy(error_string, L"");
+		wcscpy(error_string, L""); // чистим отображение об ошибке если всё успешно
 	}
-	else {
-		if (c == 13) {
-			is_finished = 1;
-			wcscpy(error_string, L"");
+	else { 
+		if (c == 13) { // если нажатая клавиша enter
+			is_finished = 1; // ввод закончен
+			wcscpy(error_string, L""); // очистили строку с ошибкой 
 		}
 		else
 			wcscpy(error_string, L"Invalid symbvol");

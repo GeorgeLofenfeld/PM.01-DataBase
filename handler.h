@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-class Key_handler
+class Key_handler // абстрактный класс
 {
 public:
 	Key_handler() {};
@@ -12,7 +12,7 @@ public:
 	void set_is_finished(int f) { is_finished = f; }
 	virtual wchar_t* get_handled_string() { return handled_string; }
 	virtual void set_handled_string(wchar_t* s) { wcscpy(handled_string, s); };
-	wchar_t* get_error_string() { return error_string; }
+	wchar_t* get_error_string() { return error_string; } // строка с текстом ошибки
 	virtual void clear() { is_finished = 0; wcscpy(handled_string, L""); }
 protected:
 	int is_finished = 0;

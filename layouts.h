@@ -260,33 +260,33 @@ Layout* create_declarers_layout(Database* db) {
     return &declarers;
 }
 
-/*
+
 Layout* create_offences_layout(Database* db) {
     static Layout offences = Layout();
     wchar_t names[16][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Просмотр",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
-    L"ФИО", L"Нарушениям", L"Назад", L"МИТИНГ","ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
+    L"ФИО", L"Нарушениям", L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) };
     static Button buttons[8] = {
-        Button(25, 3, names[2]),
-        Button(40, 3, names[3]),
-        Button(60, 3, names[4]),
-        Button(80, 3, names[5]),
-        Button(95, 3, names[6]),
-        Button(25, 3, names[8]),
-        Button(35, 3, names[9]),
-        Button(60, 3, names[10])
+        Button(25, 3, names[2], declarers_showing),
+        Button(40, 3, names[3], add_to_declarers_table),
+        Button(60, 3, names[4], declarers_change),
+        Button(80, 3, names[5], declarers_delete),
+        Button(95, 3, names[6], declarers_search),
+        Button(25, 3, names[8], declarers_sort),
+        Button(35, 3, names[9], declarers_sort),
+        Button(60, 3, names[10],declarers_main)
     };
     wchar_t table_names[20][128];
-    static Int_char_handler ich = Int_char_handler(0, 1);
+   // static Int_char_handler ich = Int_char_handler(0, 1);
     static Bool_handler bh = Bool_handler();
-    Key_handler* kh[2] = { &ich ,&bh };
+    //Key_handler* kh[2] = { &ich ,&bh };
     int sizes[2] = { 90, 30 };
     for (int i = 0; i < 2; i++)
         wcscpy(table_names[i], names[i + 11]);
     static Table table = Table(0, 10, 20, 2, names[0], table_names, sizes, db);
-    for (int i = 0; i < 2; i++)
-        table.set_i_handler(i, kh[i]);
+    //for (int i = 0; i < 2; i++)
+    //    table.set_i_handler(i, kh[i]);
     Layout_object* objects[11];
     for (int i = 0; i < 2; i++)
         objects[i] = &texts[i];
@@ -295,4 +295,4 @@ Layout* create_offences_layout(Database* db) {
     objects[10] = &table;
     offences.add_object(objects, 11);
     return &offences;
-}*/
+}
