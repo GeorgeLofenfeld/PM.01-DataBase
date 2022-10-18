@@ -59,6 +59,11 @@ void go_declarers(Frontend* fd) {
     declarers_main(fd);
 }
 
+void go_offences(Frontend* fd) {
+    fd->change_layout(3);
+    //offences_main(fd);
+}
+
 Table* get_meetings_table(Frontend* fd, int choose = 1) {
     Layout* l = fd->get_layout(1);
     wchar_t t_name[128] = L"ТАБЛИЦА МИТИНГОВ";
@@ -165,9 +170,9 @@ Layout* create_menu_layout() {
         L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"test"};
     static Text texts[3] = { Text(15, 1, names[0]),Text(15, 3, names[1]), Text(10,20,names[7])};
     static Button buttons[5] = {
-        Button(15, 5, names[2],go_meeting),
-        Button(15, 6, names[3],go_declarers),
-        Button(15, 7, names[4]),
+        Button(15, 5, names[2], go_meeting),
+        Button(15, 6, names[3], go_declarers),
+        Button(15, 7, names[4], go_offences),
         Button(15, 9, names[5], save),
         Button(15, 10, names[6], exit)
     };
@@ -266,33 +271,17 @@ Layout* create_offences_layout(Database* db) {
     wchar_t names[16][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Просмотр",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
     L"ФИО", L"Нарушениям", L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
-    static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) };
-    static Button buttons[8] = {
-        Button(25, 3, names[2], declarers_showing),
-        Button(40, 3, names[3], add_to_declarers_table),
-        Button(60, 3, names[4], declarers_change),
-        Button(80, 3, names[5], declarers_delete),
-        Button(95, 3, names[6], declarers_search),
-        Button(25, 3, names[8], declarers_sort),
-        Button(35, 3, names[9], declarers_sort),
-        Button(60, 3, names[10],declarers_main)
-    };
-    wchar_t table_names[20][128];
-   // static Int_char_handler ich = Int_char_handler(0, 1);
-    static Bool_handler bh = Bool_handler();
-    //Key_handler* kh[2] = { &ich ,&bh };
-    int sizes[2] = { 90, 30 };
-    for (int i = 0; i < 2; i++)
+    static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) }; // статик текст
+    wchar_t table_names[20][128]; // названия столбцов
+    static Bool_handler bh = Bool_handler(); // флаг 
+    int sizes[5] = { 30, 30, 30, 30, 30}; // размеры столбцов
+    for (int i = 0; i < 5; i++)
         wcscpy(table_names[i], names[i + 11]);
-    static Table table = Table(0, 10, 20, 2, names[0], table_names, sizes, db);
-    //for (int i = 0; i < 2; i++)
-    //    table.set_i_handler(i, kh[i]);
-    Layout_object* objects[11];
+    static Table table = Table(0, 10, 20, 5, names[0], table_names, sizes, db);
+    Layout_object* objects[3]; // массив наследников layout_object, к ним всем можно обращаться по ссылке layout_object*
     for (int i = 0; i < 2; i++)
-        objects[i] = &texts[i];
-    for (int i = 2; i < 10; i++)
-        objects[i] = &buttons[i - 2];
-    objects[10] = &table;
-    offences.add_object(objects, 11);
-    return &offences;
+        objects[i] = &texts[i]; // кладём на первые позиции фоновый текст
+    objects[2] = &table; // положили адрес таблицы
+    offences.add_object(objects, 3); // добавили в layout n объектов
+    return &offences; // вернули layout по ссылке 
 }

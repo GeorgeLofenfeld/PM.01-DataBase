@@ -59,7 +59,7 @@ public:
 	int compare(Database_record* y, int index) { return 0; };
 private:
 	int meeting_id;
-	//wchar_t meeting[128];
+	wchar_t meeting[128];
 	wchar_t offender_full_name[128];
 	wchar_t normative_act[128];
 	wchar_t article_and_paragraph[128];
@@ -107,9 +107,6 @@ private:
 	base_type type = error;
 	Base_operator* bop;
 };
-//meetings
-//declarers
-//offences
 
 class Base_operator
 {

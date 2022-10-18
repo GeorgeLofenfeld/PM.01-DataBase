@@ -114,7 +114,7 @@ void Table::print()
 		print_adding_row(chosen_row % row_cnt);
 	print_error_message();
 	move_cursor_to(x, y + row_cnt + 3 + 2);
-	printf("page %d", page_num);
+	printf("Страница %d", page_num);
 }
 
 void Table::react(wchar_t key)

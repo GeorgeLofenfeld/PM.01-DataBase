@@ -1,27 +1,27 @@
 #include "handler.h"
 
 
-void Int_char_handler::handle(wchar_t c)
+void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 {
 	if (char_ok && (((L'a' <= c) && (c <= L'z')) || ((L'A' <= c) && (c <= L'Z')) || c == L' ' 
 		|| ((L'а' <= c) && (c <= L'я')) || ((L'А' <= c) && (c <= L'Я')) )
 		||
 		int_ok && (L'0' <= c) && (c <= L'9')) {
-		if (wcslen(handled_string) < maxlength-1)
-			wcsncat(handled_string, &c, 1);
-		wcscpy(error_string, L"");
+		if (wcslen(handled_string) < maxlength-1) // можем добавлять до тех пор, пока строка меньше максимальной на единицу
+			wcsncat(handled_string, &c, 1); // добавляем символ 
+		wcscpy(error_string, L""); // очищение строки с ошибкой 
 	}
 	else {
 		if (c == 13) {
-			if (wcslen(handled_string) > 0) { //enter key
-				is_finished = 1;
+			if (wcslen(handled_string) > 0) { // enter 
+				is_finished = 1; // ввод окончен
 				wcscpy(error_string, L"");
 			}
 			else
 				wcscpy(error_string, L"String can not be empty");
 		}
-		else if (c == 8 && wcslen(handled_string) > 0) { // backspase key
-			handled_string[wcslen(handled_string) - 1] = '\0'; //delete last letter
+		else if (c == 8 && wcslen(handled_string) > 0) { // backspase 
+			handled_string[wcslen(handled_string) - 1] = '\0'; // удалить последний символ
 			wcscpy(error_string, L"");
 		}
 		else
@@ -29,7 +29,7 @@ void Int_char_handler::handle(wchar_t c)
 	}
 }
 
-int is_correct(wchar_t* s, int date_or_time) {
+int is_correct(wchar_t* s, int date_or_time) { // в разработке
 	if (wcslen(s) == 6)
 		return 1;  
 	return 0;
@@ -37,7 +37,7 @@ int is_correct(wchar_t* s, int date_or_time) {
 
 void Date_time_handler::handle(wchar_t c)
 {
-	if (date_or_time_handling) { // 
+	if (date_or_time_handling) { //  
 		if (wcslen(handled_string) < 6 && ('0' <= c) && (c <= '9')) {
 			wcsncat(handled_string, &c, 1);
 			wcscpy(error_string, L"");

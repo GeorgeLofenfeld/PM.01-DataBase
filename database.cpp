@@ -157,22 +157,24 @@ int Database_meetings_record::compare(Database_record* y, int index)
 
 wchar_t** Database_offences_record::to_string()
 {
-	wcscpy(strings[0], offender_full_name);
-	wcscpy(strings[1], normative_act);
-	wcscpy(strings[2], article_and_paragraph);
+	wcscpy(strings[0], meeting);
+	wcscpy(strings[1], offender_full_name);
+	wcscpy(strings[2], normative_act);
+	wcscpy(strings[3], article_and_paragraph);
 	if (conviction_flag)
-		wcscpy(strings[3], L"дю");
+		wcscpy(strings[4], L"дю");
 	else
-		wcscpy(strings[3], L"мер");
+		wcscpy(strings[4], L"мер");
 	return strings;
 }
 
 void Database_offences_record::from_string(wchar_t str[20][128])
 {
-	wcscpy(offender_full_name, str[0]);
-	wcscpy(normative_act, str[1]);
-	wcscpy(article_and_paragraph, str[2]);
-	if (wcscmp(str[3], L"дю") == 0)
+	wcscpy(meeting, str[0]);
+	wcscpy(offender_full_name, str[1]);
+	wcscpy(normative_act, str[2]);
+	wcscpy(article_and_paragraph, str[3]);
+	if (wcscmp(str[4], L"дю") == 0)
 		conviction_flag = 1;
 	else
 		conviction_flag = 0;
