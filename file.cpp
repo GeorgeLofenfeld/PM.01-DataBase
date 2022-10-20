@@ -153,8 +153,8 @@ Database_record* Base_operator::read(FILE* in, base_type bt) {
 	int cnt = 0;
 	while (ptr != NULL)
 	{
-		wcscpy(words[cnt], ptr);
-		ptr = wcstok_s(NULL, delim,&rowstate);
+		wcscpy(words[cnt], ptr); //  опируем строку до ближайшего разделител€ ( | )
+		ptr = wcstok_s(NULL, delim,&rowstate); // передвигаем указатель на следующий разделитель
 		cnt++;
 	}
 

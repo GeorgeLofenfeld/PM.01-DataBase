@@ -25,6 +25,18 @@ void declarers_main(Frontend* fd) {
         l->get_object_by_caption(names_to_show[i])->activate();
 }
 
+void offences_main(Frontend* fd) {
+    Layout* l = fd->get_layout(3);
+    wchar_t names_to_hide[7][128] = { L"Сортировать по:",
+    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", L"Назад"};
+    wchar_t names_to_show[6][128] = { L"Установите режим:", L"Сортировка",
+        L"Добавление", L"Редактирование", L"Удаление", L"Поиск" };
+    for (int i = 0; i < 7; i++)
+        l->get_object_by_caption(names_to_hide[i])->deactivate();
+    for (int i = 0; i < 6; i++)
+        l->get_object_by_caption(names_to_show[i])->activate();
+}
+
 void meeting_showing(Frontend* fd){
     Layout* l = fd->get_layout(1);
     wchar_t names_to_show[7][128] = { L"Сортировать по:",
@@ -39,13 +51,25 @@ void meeting_showing(Frontend* fd){
 
 void declarers_showing(Frontend* fd) {
     Layout* l = fd->get_layout(2);
-    wchar_t names_to_show[6][128] = { L"Сортировать по:",
+    wchar_t names_to_show[4][128] = { L"Сортировать по:",
     L"ФИО", L"Нарушениям", L"Назад" };
     wchar_t names_to_hide[6][128] = { L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск" };
     for (int i = 0; i < 6; i++)
         l->get_object_by_caption(names_to_hide[i])->deactivate();
     for (int i = 0; i < 4; i++)
+        l->get_object_by_caption(names_to_show[i])->activate();
+}
+
+void offences_showing(Frontend* fd) {
+    Layout* l = fd->get_layout(3);
+    wchar_t names_to_show[7][128] = { L"Сортировать по:",
+    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", L"Назад"};
+    wchar_t names_to_hide[6][128] = { L"Установите режим:", L"Сортировка",
+        L"Добавление", L"Редактирование", L"Удаление", L"Поиск" };
+    for (int i = 0; i < 6; i++)
+        l->get_object_by_caption(names_to_hide[i])->deactivate();
+    for (int i = 0; i < 7; i++)
         l->get_object_by_caption(names_to_show[i])->activate();
 }
 
@@ -61,7 +85,7 @@ void go_declarers(Frontend* fd) {
 
 void go_offences(Frontend* fd) {
     fd->change_layout(3);
-    //offences_main(fd);
+    offences_main(fd);
 }
 
 Table* get_meetings_table(Frontend* fd, int choose = 1) {
@@ -76,6 +100,15 @@ Table* get_meetings_table(Frontend* fd, int choose = 1) {
 Table* get_declarers_table(Frontend* fd, int choose = 1) {
     Layout* l = fd->get_layout(2);
     wchar_t t_name[128] = L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ";
+    Table* table = (Table*)l->get_object_by_caption(t_name);
+    if (choose)
+        l->change_swichable_object(table);
+    return table;
+}
+
+Table* get_offences_table(Frontend* fd, int choose = 1) {
+    Layout* l = fd->get_layout(3);
+    wchar_t t_name[128] = L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ";
     Table* table = (Table*)l->get_object_by_caption(t_name);
     if (choose)
         l->change_swichable_object(table);
@@ -112,6 +145,21 @@ void declarers_sort(Frontend* fd) {
     }
 }
 
+void offences_sort(Frontend* fd) {
+    Layout* l = fd->get_layout(3);
+    Layout_object* lo = l->get_chosen_object();
+    wchar_t names[5][128] = { L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом"};
+    if (lo != nullptr) {
+        int index = -1;
+        for (int i = 0; i < 5; i++)
+            if (wcscmp(names[i], lo->get_caption()) == 0)
+                index = i;
+        Table* table = get_offences_table(fd, 0);
+        if (index >= 0)
+            table->get_database()->sort_by_index(index);
+    }
+}
+
 void add_to_meetings_table(Frontend* fd) {
     Table* table = get_meetings_table(fd);
     table->change_state(Table::adding);
@@ -120,6 +168,12 @@ void add_to_meetings_table(Frontend* fd) {
 
 void add_to_declarers_table(Frontend* fd) {
     Table* table = get_declarers_table(fd);
+    table->change_state(Table::adding);
+
+}
+
+void add_to_offences_table(Frontend* fd) {
+    Table* table = get_offences_table(fd);
     table->change_state(Table::adding);
 
 }
@@ -134,6 +188,11 @@ void declarers_delete(Frontend* fd) {
     table->change_state(Table::deleting);
 }
 
+void offences_delete(Frontend* fd) {
+    Table* table = get_offences_table(fd);
+    table->change_state(Table::deleting);
+}
+
 
 void meetings_change(Frontend* fd) {
     Table* table = get_meetings_table(fd);
@@ -145,6 +204,11 @@ void declarers_change(Frontend* fd) {
     table->change_state(Table::choosing_for_changing);
 }
 
+void offences_change(Frontend* fd) {
+    Table* table = get_offences_table(fd);
+    table->change_state(Table::choosing_for_changing);
+}
+
 void meetings_search(Frontend* fd) {
     Table* table = get_meetings_table(fd);
     table->change_state(Table::searching);
@@ -152,6 +216,11 @@ void meetings_search(Frontend* fd) {
 
 void declarers_search(Frontend* fd) {
     Table* table = get_declarers_table(fd);
+    table->change_state(Table::searching);
+}
+
+void offences_search(Frontend* fd) {
+    Table* table = get_offences_table(fd);
     table->change_state(Table::searching);
 }
 
@@ -268,20 +337,45 @@ Layout* create_declarers_layout(Database* db) {
 
 Layout* create_offences_layout(Database* db) {
     static Layout offences = Layout();
-    wchar_t names[16][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Просмотр",
+    wchar_t names[19][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
-    L"ФИО", L"Нарушениям", L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
+    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", 
+    L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) }; // статик текст
+    static Button buttons[11] = {
+        Button(25, 3, names[2], offences_showing),
+        Button(40, 3, names[3], add_to_offences_table),
+        Button(60, 3, names[4], offences_change),
+        Button(80, 3, names[5], offences_delete),
+        Button(95, 3, names[6], offences_search),
+        Button(25, 3, names[8], offences_sort),
+        Button(35, 3, names[9], offences_sort),
+        Button(35, 3, names[10], offences_sort),
+        Button(35, 3, names[11], offences_sort),
+        Button(35, 3, names[12], offences_sort),
+        Button(60, 3, names[13],offences_main)
+    }; 
     wchar_t table_names[20][128]; // названия столбцов
-    static Bool_handler bh = Bool_handler(); // флаг 
     int sizes[5] = { 30, 30, 30, 30, 30}; // размеры столбцов
+    static Int_char_handler ich[4] =
+    { Int_char_handler(sizes[0], 1, 1),
+    Int_char_handler(sizes[1], 0, 1),
+    Int_char_handler(sizes[2], 1, 1),
+    Int_char_handler(sizes[3], 1, 1) };
+    static Bool_handler bh = Bool_handler();
+
     for (int i = 0; i < 5; i++)
-        wcscpy(table_names[i], names[i + 11]);
+        wcscpy(table_names[i], names[i + 14]);
     static Table table = Table(0, 10, 20, 5, names[0], table_names, sizes, db);
-    Layout_object* objects[3]; // массив наследников layout_object, к ним всем можно обращаться по ссылке layout_object*
+    for (int i = 0; i < 4; i++)
+        table.set_i_handler(i, &ich[i]);
+    table.set_i_handler(4, &bh);
+    Layout_object* objects[14]; // массив наследников layout_object, к ним всем можно обращаться по ссылке layout_object*
     for (int i = 0; i < 2; i++)
         objects[i] = &texts[i]; // кладём на первые позиции фоновый текст
     objects[2] = &table; // положили адрес таблицы
-    offences.add_object(objects, 3); // добавили в layout n объектов
+    for (int i = 0; i < 11; i++) // Добавление кнопок в массив объектов
+        objects[i + 3] = &buttons[i]; 
+    offences.add_object(objects, 14); // добавили в layout n объектов
     return &offences; // вернули layout по ссылке 
 }
