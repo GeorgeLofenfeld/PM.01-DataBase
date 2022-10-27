@@ -28,7 +28,7 @@ void declarers_main(Frontend* fd) {
 void offences_main(Frontend* fd) {
     Layout* l = fd->get_layout(3);
     wchar_t names_to_hide[7][128] = { L"Сортировать по:",
-    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", L"Назад"};
+    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом", L"Назад"};
     wchar_t names_to_show[6][128] = { L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск" };
     for (int i = 0; i < 7; i++)
@@ -64,7 +64,7 @@ void declarers_showing(Frontend* fd) {
 void offences_showing(Frontend* fd) {
     Layout* l = fd->get_layout(3);
     wchar_t names_to_show[7][128] = { L"Сортировать по:",
-    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", L"Назад"};
+    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом", L"Назад"};
     wchar_t names_to_hide[6][128] = { L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск" };
     for (int i = 0; i < 6; i++)
@@ -148,7 +148,7 @@ void declarers_sort(Frontend* fd) {
 void offences_sort(Frontend* fd) {
     Layout* l = fd->get_layout(3);
     Layout_object* lo = l->get_chosen_object();
-    wchar_t names[5][128] = { L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом"};
+    wchar_t names[5][128] = { L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом"};
     if (lo != nullptr) {
         int index = -1;
         for (int i = 0; i < 5; i++)
@@ -254,7 +254,7 @@ Layout* create_menu_layout() {
     return &main_menu;
 }
 
-Layout* create_meetings_layout(Database *db) {
+Layout* create_meetings_layout(Database *db) { 
     static Layout meetings = Layout();
     wchar_t names[21][128] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
@@ -339,7 +339,7 @@ Layout* create_offences_layout(Database* db) {
     static Layout offences = Layout();
     wchar_t names[19][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
-    L"Митингам", L"ФИО Нарушителя", L"Нормативному акту", L"Статье и пункту нормативного акту", L"Флагу осуждения судом", 
+    L"Митингам", L"ФИО Нарушителя",  L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом",
     L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) }; // статик текст
     static Button buttons[11] = {
@@ -350,10 +350,10 @@ Layout* create_offences_layout(Database* db) {
         Button(95, 3, names[6], offences_search),
         Button(25, 3, names[8], offences_sort),
         Button(35, 3, names[9], offences_sort),
-        Button(35, 3, names[10], offences_sort),
-        Button(35, 3, names[11], offences_sort),
-        Button(35, 3, names[12], offences_sort),
-        Button(60, 3, names[13],offences_main)
+        Button(53, 3, names[10], offences_sort),
+        Button(75, 3, names[11], offences_sort),
+        Button(92, 3, names[12], offences_sort),
+        Button(125, 3, names[13],offences_main)
     }; 
     wchar_t table_names[20][128]; // названия столбцов
     int sizes[5] = { 30, 30, 30, 30, 30}; // размеры столбцов

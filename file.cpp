@@ -148,16 +148,15 @@ Database_record* Base_operator::read(FILE* in, base_type bt) {
 	wchar_t delim[] = L"|";
 	fgetws(line, 2560, in);
 	wchar_t* rowstate;
-	line[wcslen(line) - 1] = 0;//remove \n
+	line[wcslen(line) - 1] = 0;// remove \n
 	wchar_t* ptr = wcstok_s(line, delim,&rowstate);
 	int cnt = 0;
 	while (ptr != NULL)
-	{
-		wcscpy(words[cnt], ptr); //  опируем строку до ближайшего разделител€ ( | )
-		ptr = wcstok_s(NULL, delim,&rowstate); // передвигаем указатель на следующий разделитель
+	{	
+		wcsncpy(words[cnt], ptr, 128); //  опируем строку до ближайшего разделител€ ( | )
+		ptr = wcstok_s(NULL, delim, &rowstate); // передвигаем указатель на следующий разделитель
 		cnt++;
 	}
-
 	return this->add(words, bt);
 }
 

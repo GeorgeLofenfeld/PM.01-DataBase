@@ -58,6 +58,7 @@ Database_record** Database::get_data()
 wchar_t* Database_record::to_line()
 {
 	wchar_t** str = this->to_string();
+	wcsncpy(line, L"", 2);
 	for (int i = 0; i < field_cnt; i++) {
 		wcsncat(line, str[i], 300);
 		wcsncat(line, L"|", 300);
