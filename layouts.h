@@ -1,5 +1,5 @@
 #pragma once
-
+#define FOREGROUND_YELLOW 14
 
 void meeting_main(Frontend* fd) {
     Layout* l = fd->get_layout(1);
@@ -233,11 +233,12 @@ void exit(Frontend* fd) {
     fd->stop();
 }
 
+
 Layout* create_menu_layout() {
     static Layout main_menu = Layout();
     wchar_t names[8][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
-        L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"test"};
-    static Text texts[3] = { Text(15, 1, names[0]),Text(15, 3, names[1]), Text(10,20,names[7])};
+        L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"2022 (c) Created by George L." };
+    static Text texts[3] = { Text(15, 1, names[0]),Text(15, 3, names[1]), Text(5, 40, names[7], FOREGROUND_YELLOW)};
     static Button buttons[5] = {
         Button(15, 5, names[2], go_meeting),
         Button(15, 6, names[3], go_declarers),
@@ -256,12 +257,12 @@ Layout* create_menu_layout() {
 
 Layout* create_meetings_layout(Database *db) { 
     static Layout meetings = Layout();
-    wchar_t names[21][128] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
+    wchar_t names[22][128] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Разрешению", L"Назад",
         L"ДАТА", L"ВРЕМЯ", L"КОЛ. ЗАЯВ. УЧАСТН.", L"КОЛ. ФАКТ. УЧАСТН.",
-        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ"};
-    static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7])};
+        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ", L"2022 (c) Created by George L." };
+    static Text texts[3] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 38, names[21], FOREGROUND_YELLOW) };
     static Button buttons[11] = {
         Button(25, 3, names[2],meeting_showing),
         Button(40, 3, names[3], add_to_meetings_table),
@@ -276,7 +277,7 @@ Layout* create_meetings_layout(Database *db) {
         Button(140, 3, names[13],meeting_main),
     };
     wchar_t table_names[20][128];
-    int sizes[7] = { 15 ,15,40,40, 30,30, 13 };
+    int sizes[7] = { 10, 10, 21, 21, 60, 60, 13 };
     static Date_time_handler dth[2] = { Date_time_handler(1), Date_time_handler(0) };
     static Int_char_handler ich[4] = { 
         Int_char_handler(sizes[2],1,0), Int_char_handler(sizes[3],1,0),
@@ -288,13 +289,13 @@ Layout* create_meetings_layout(Database *db) {
     static Table table = Table(0, 10, 20, 7, names[0], table_names, sizes, db);
     for (int i = 0; i < 7; i++)
         table.set_i_handler(i, kh[i]);
-    Layout_object* objects[14];
-    for (int i = 0; i < 2; i++)
+    Layout_object* objects[15];
+    for (int i = 0; i < 3; i++)
         objects[i] = &texts[i];
-    for (int i = 2; i < 13; i++)
-        objects[i] = &buttons[i - 2];
-    objects[13] = &table;
-    meetings.add_object(objects, 14);
+    for (int i = 3; i < 14; i++)
+        objects[i] = &buttons[i - 3];
+    objects[14] = &table;
+    meetings.add_object(objects, 15);
     return &meetings;
 }
 
@@ -315,7 +316,7 @@ Layout* create_declarers_layout(Database* db) {
         Button(60, 3, names[10],declarers_main)
     };
     wchar_t table_names[20][128];
-    int sizes[2] = { 90, 30 };
+    int sizes[2] = { 60, 20 };
     static Int_char_handler ich =  Int_char_handler(sizes[0],0,1);
     static Bool_handler bh = Bool_handler();
     Key_handler* kh[2] = { &ich ,&bh };
@@ -335,7 +336,7 @@ Layout* create_declarers_layout(Database* db) {
 }
 
 
-Layout* create_offences_layout(Database* db) {
+Layout* create_offences_layout(Database* db) { 
     static Layout offences = Layout();
     wchar_t names[19][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
@@ -356,7 +357,7 @@ Layout* create_offences_layout(Database* db) {
         Button(125, 3, names[13],offences_main)
     }; 
     wchar_t table_names[20][128]; // названия столбцов
-    int sizes[5] = { 30, 30, 30, 30, 30}; // размеры столбцов
+    int sizes[5] = { 60, 60, 30, 30, 18}; // размеры столбцов
     static Int_char_handler ich[4] =
     { Int_char_handler(sizes[0], 1, 1),
     Int_char_handler(sizes[1], 0, 1),

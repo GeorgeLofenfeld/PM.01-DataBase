@@ -2,6 +2,8 @@
 #define _CRT_NON_CONFORMING_WCSTOK
 #include <wchar.h>
 
+#define FOREGROUND_YELLOW 14
+
 void move_cursor_to(int x, int y) {
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD pos;
@@ -14,10 +16,11 @@ int min_number(int a, int b) {
 	return a <= b ? a : b;
 }
 
-Text::Text(int x, int y, wchar_t t[])
+Text::Text(int x, int y, wchar_t t[], int color)
 {
 	this->x = x;
 	this->y = y;
+	this->text_color = color;
 	wcscpy(caption, t); // текст текста 
 	is_swichable = 0; // текст никогда нельз€ выбрать
 }
@@ -26,7 +29,10 @@ Text::Text(int x, int y, wchar_t t[])
 void Text::print() 
 {
 	move_cursor_to(x, y);
-	printf("%ls", caption);
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательна€ переменна€ дл€ смены фона 
+	SetConsoleTextAttribute(hStdOut, text_color | FOREGROUND_INTENSITY);
+	printf("%ls", caption); // wchar* (long string), выводим название 
+	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
 
 
@@ -70,7 +76,7 @@ Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t 
 	this->col_cnt = col_cnt+1;
 	wcscpy(this->caption, caption);
 	wcscpy(this->names[0], L"є");
-	this->sizes[0] = 7;
+	this->sizes[0] = 4;
 	this->db = db;
 	for (int i = 0; i < col_cnt; i++) {
 		wcscpy(this->names[i+1], names[i]);
@@ -91,7 +97,7 @@ void Table::print()
 			for (int k = 0; k < sizes[i]; k++)
 				printf("_");
 		}
-		move_cursor_to(cur_x + (space_cnt+1) / 2, y+2);
+		move_cursor_to(cur_x + (space_cnt+1) / 2, y + 2);
 		printf("%ls",names[i]);
 		cur_x += sizes[i];
 		for (int j = 1; j <= row_cnt + 3 + 1; j++) {
@@ -113,8 +119,8 @@ void Table::print()
 	else if (state == changing)
 		print_adding_row(chosen_row % row_cnt);
 	print_error_message();
-	move_cursor_to(x, y + row_cnt + 3 + 2);
-	printf("—траница %d", page_num);
+	move_cursor_to(x, y + row_cnt + 3 + 2+1);
+	printf("—траница %d", page_num+1);
 }
 
 void Table::react(wchar_t key)
@@ -272,9 +278,9 @@ void Table::print_row(int i)
 	int row = i % row_cnt;
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (i == chosen_row && show_chosen_row)
-		SetConsoleTextAttribute(hStdOut, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
+		SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY);
 	move_cursor_to_row_col(row, 0);
-	printf("%d", i);
+	printf(" %d", i+1);
 	for (int j = 0; j < col_cnt-1; j++) {
 		move_cursor_to_row_col(row, j+1);
 		printf("%ls", strings[j]);
@@ -301,7 +307,7 @@ void Table::print_adding_row(int a_y)
 	
 	for (int i = 0; i < col_cnt-1; i++) {
 		if (i == adding_counter)
-			SetConsoleTextAttribute(hStdOut, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
+			SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY);
 		move_cursor_to_row_col(a_y, i+1);
 		printf("%ls", adding_strings[i]);
 		if (i == adding_counter)

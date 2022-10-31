@@ -6,6 +6,8 @@
 #include "database.h"
 #include "handler.h"
 
+#define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED)
+
 class Layout; // объ€вл€ем заранее, опишем позже. »сключение взаимной рекурсии в layout_object (аналогично с frontend и key_handler)
 class Frontend; 
 class Key_handler;
@@ -65,10 +67,12 @@ private:
 class Text : public Layout_object
 {
 public:
-	Text(int x, int y, wchar_t t[]);
+	Text(int x, int y, wchar_t t[], int color = FOREGROUND_WHITE);
 	~Text() {};
 	void print();
 	void react(wchar_t key) {};
+private:
+	int text_color = FOREGROUND_WHITE;
 };
 
 class Table : public Layout_object
