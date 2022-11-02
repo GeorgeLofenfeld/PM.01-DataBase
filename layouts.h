@@ -238,13 +238,13 @@ Layout* create_menu_layout() {
     static Layout main_menu = Layout();
     wchar_t names[8][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
         L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"2022 (c) Created by George L." };
-    static Text texts[3] = { Text(15, 1, names[0]),Text(15, 3, names[1]), Text(5, 40, names[7], FOREGROUND_YELLOW)};
+    static Text texts[3] = { Text(5, 3, names[0]),Text(5, 5, names[1]), Text(5, 17, names[7], FOREGROUND_YELLOW)};
     static Button buttons[5] = {
-        Button(15, 5, names[2], go_meeting),
-        Button(15, 6, names[3], go_declarers),
-        Button(15, 7, names[4], go_offences),
-        Button(15, 9, names[5], save),
-        Button(15, 10, names[6], exit)
+        Button(5, 7, names[2], go_meeting),
+        Button(5, 8, names[3], go_declarers),
+        Button(5, 9, names[4], go_offences),
+        Button(5, 11, names[5], save),
+        Button(5, 12, names[6], exit)
     };
     Layout_object* objects[8];
     for (int i = 0; i < 3; i++)
@@ -265,12 +265,12 @@ Layout* create_meetings_layout(Database *db) {
     static Text texts[3] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 38, names[21], FOREGROUND_YELLOW) };
     static Button buttons[11] = {
         Button(25, 3, names[2],meeting_showing),
-        Button(40, 3, names[3], add_to_meetings_table),
-        Button(60, 3, names[4], meetings_change),
-        Button(80, 3, names[5], meetings_delete),
-        Button(95, 3, names[6],meetings_search),
+        Button(38, 3, names[3], add_to_meetings_table),
+        Button(51, 3, names[4], meetings_change),
+        Button(68, 3, names[5], meetings_delete),
+        Button(79, 3, names[6],meetings_search),
         Button(25, 3, names[8],meeting_sort),
-        Button(35, 3, names[9],meeting_sort),
+        Button(38, 3, names[9],meeting_sort),
         Button(45, 3, names[10],meeting_sort),
         Button(80, 3, names[11],meeting_sort),
         Button(115, 3, names[12],meeting_sort),
@@ -307,10 +307,10 @@ Layout* create_declarers_layout(Database* db) {
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) };
     static Button buttons[8] = {
         Button(25, 3, names[2], declarers_showing),
-        Button(40, 3, names[3], add_to_declarers_table),
-        Button(60, 3, names[4], declarers_change),
-        Button(80, 3, names[5], declarers_delete),
-        Button(95, 3, names[6], declarers_search),
+        Button(38, 3, names[3], add_to_declarers_table),
+        Button(51, 3, names[4], declarers_change),
+        Button(68, 3, names[5], declarers_delete),
+        Button(79, 3, names[6], declarers_search),
         Button(25, 3, names[8], declarers_sort),
         Button(35, 3, names[9], declarers_sort),
         Button(60, 3, names[10],declarers_main)
@@ -345,10 +345,10 @@ Layout* create_offences_layout(Database* db) {
     static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) }; // статик текст
     static Button buttons[11] = {
         Button(25, 3, names[2], offences_showing),
-        Button(40, 3, names[3], add_to_offences_table),
-        Button(60, 3, names[4], offences_change),
-        Button(80, 3, names[5], offences_delete),
-        Button(95, 3, names[6], offences_search),
+        Button(38, 3, names[3], add_to_offences_table),
+        Button(51, 3, names[4], offences_change),
+        Button(68, 3, names[5], offences_delete),
+        Button(79, 3, names[6], offences_search),
         Button(25, 3, names[8], offences_sort),
         Button(35, 3, names[9], offences_sort),
         Button(53, 3, names[10], offences_sort),

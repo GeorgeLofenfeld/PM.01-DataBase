@@ -18,14 +18,14 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 				wcscpy(error_string, L"");
 			}
 			else
-				wcscpy(error_string, L"String can not be empty");
+				wcscpy(error_string, L"Строка не может быть пуста");
 		}
 		else if (c == 8 && wcslen(handled_string) > 0) { // backspase 
 			handled_string[wcslen(handled_string) - 1] = '\0'; // удалить последний символ
 			wcscpy(error_string, L"");
 		}
 		else
-			wcscpy(error_string, L"Invalid symbvol");
+			wcscpy(error_string, L"Недопустимый знак");
 	}
 }
 
@@ -37,13 +37,13 @@ int is_correct(wchar_t* s, int date_or_time) { // в разработке
 
 void Date_time_handler::handle(wchar_t c)
 {
-	if (date_or_time_handling) { //  
+	if (date_or_time_handling) { 
 		if (wcslen(handled_string) < 6 && ('0' <= c) && (c <= '9')) {
 			wcsncat(handled_string, &c, 1);
 			wcscpy(error_string, L"");
 		}
 		else
-			wcscpy(error_string, L"Incorrect data");
+			wcscpy(error_string, L"Недопустимая дата / время");
 	}
 	else
 	{
@@ -52,7 +52,7 @@ void Date_time_handler::handle(wchar_t c)
 			wcscpy(error_string, L"");
 		}
 		else
-			wcscpy(error_string, L"Incorrect data");
+			wcscpy(error_string, L"Недопустимая дата / время");
 	}
 	if (c == 8 && wcslen(handled_string) > 0) { // backspase key
 		handled_string[wcslen(handled_string) - 1] = '\0'; //delete last letter
@@ -108,6 +108,6 @@ void Bool_handler::handle(wchar_t c)
 			wcscpy(error_string, L""); // очистили строку с ошибкой 
 		}
 		else
-			wcscpy(error_string, L"Invalid symbvol");
+			wcscpy(error_string, L"Недопустимый знак");
 	}
 }
