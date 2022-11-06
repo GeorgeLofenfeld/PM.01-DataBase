@@ -118,7 +118,8 @@ void Table::print()
 		print_adding_row(db->get_size() % row_cnt);
 	else if (state == changing)
 		print_adding_row(chosen_row % row_cnt);
-	print_error_message();
+	if (state==adding || state == changing) 
+		print_error_message();
 	move_cursor_to(x, y + row_cnt + 3 + 2+1);
 	printf("Страница %d", page_num+1);
 }
@@ -213,9 +214,9 @@ void generate_available_letters(wchar_t** s) {
 	(*s)[0] = 13;
 	(*s)[1] = 8;
 	(*s)[2] = L' ';
-	for (wchar_t i = L'0'; i <= L'z'; i++)
-		(*s)[i - L'0' + 3] = i;
-	int first_part = L'z' - L'0' + 4;
+	for (wchar_t i = L','; i <= L'z'; i++)// , - . / 0 1 2 ... z
+		(*s)[i - L',' + 3] = i;
+	int first_part = L'z' - L',' + 4;
 	for (wchar_t j = L'А'; j <= L'я'; j++)
 		(*s)[first_part + j - L'А'] = j;
 	(*s)[first_part + L'я' - L'А' + 1] = 0;
@@ -321,6 +322,7 @@ void Table::print_error_message()
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_RED);
 	printf("%ls", error_message);
+	wcscpy(error_message, L"");
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
 

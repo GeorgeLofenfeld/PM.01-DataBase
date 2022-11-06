@@ -1,15 +1,28 @@
 #include "handler.h"
+#include <wchar.h>
 
+Int_char_handler::Int_char_handler(int maxlength, int int_ok, int char_ok) // получаем первым аргументом макс. длинну строки. int_ok - если работаем с числом, char_ok - если с буквой (могут быть одновременно)
+{
+	this->maxlength = maxlength; 
+	if (int_ok && !char_ok)
+		if (maxlength > 9)
+			this->maxlength = 9;
+	this->int_ok = int_ok;
+	this->char_ok = char_ok; 
+}
 
 void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 {
 	if (char_ok && (((L'a' <= c) && (c <= L'z')) || ((L'A' <= c) && (c <= L'Z')) || c == L' ' 
-		|| ((L'а' <= c) && (c <= L'€')) || ((L'ј' <= c) && (c <= L'я')) )
+		|| ((L'а' <= c) && (c <= L'€')) || ((L'ј' <= c) && (c <= L'я')) || ((L',' <= c) && (c <= L'/')))
 		||
 		int_ok && (L'0' <= c) && (c <= L'9')) {
-		if (wcslen(handled_string) < maxlength-1) // можем добавл€ть до тех пор, пока строка меньше максимальной на единицу
+		if (wcslen(handled_string) < maxlength - 1) {// можем добавл€ть до тех пор, пока строка меньше максимальной на единицу 
 			wcsncat(handled_string, &c, 1); // добавл€ем символ 
-		wcscpy(error_string, L""); // очищение строки с ошибкой 
+			wcscpy(error_string, L""); // очищение строки с ошибкой 
+		} 
+		else
+			wcscpy(error_string, L"¬ведено максимальное количество символов");
 	}
 	else {
 		if (c == 13) {
@@ -25,13 +38,46 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 			wcscpy(error_string, L"");
 		}
 		else
-			wcscpy(error_string, L"Ќедопустимый знак");
+			wcscpy(error_string, L"Ќедопустимый символ");
 	}
 }
 
 int is_correct(wchar_t* s, int date_or_time) { // в разработке
-	if (wcslen(s) == 6)
-		return 1;  
+	if (wcslen(s) != 6)
+		return 0;  
+	wchar_t s_divided[3][3] = { L"",L"",L"" };
+	for (int i = 0; i < 3; i++) {
+		wcsncpy(s_divided[i], s + i * 2, 2);
+		s_divided[i][2] = 0;
+	}
+		
+	if (date_or_time == 1) {
+		int dd, mm, yy;
+		dd = wcstol(s_divided[0], NULL, 10);
+		mm = wcstol(s_divided[1], NULL, 10);
+		yy = wcstol(s_divided[2], NULL, 10);
+		//check year 
+		if (yy >= 00 && yy <= 99)
+			//check month 
+			if (mm >= 1 && mm <= 12)
+				//check days
+				if ((dd >= 1 && dd <= 31) && (mm == 1 || mm == 3 || mm == 5 || mm == 7 || mm == 8 || mm == 10 || mm == 12))
+					return 1;
+				else if ((dd >= 1 && dd <= 30) && (mm == 4 || mm == 6 || mm == 9 || mm == 11))
+					return 1;
+				else if ((dd >= 1 && dd <= 28) && (mm == 2))
+					return 1;
+				else if (dd == 29 && mm == 2 && (yy % 4 == 0 && yy != 0))
+					return 1;
+	}
+	else {
+		int hh, mm, ss;
+		hh = wcstol(s_divided[0], NULL, 10);
+		mm = wcstol(s_divided[1], NULL, 10);
+		ss = wcstol(s_divided[2], NULL, 10);
+		if (hh < 24 && mm < 60 && ss < 60)
+			return 1;
+	}
 	return 0;
 }
 
@@ -108,6 +154,6 @@ void Bool_handler::handle(wchar_t c)
 			wcscpy(error_string, L""); // очистили строку с ошибкой 
 		}
 		else
-			wcscpy(error_string, L"Ќедопустимый знак");
+			wcscpy(error_string, L"Ќедопустимый символ");
 	}
 }

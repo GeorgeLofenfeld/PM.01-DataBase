@@ -23,7 +23,7 @@ protected:
 class Int_char_handler : public Key_handler // обработка цифр и (или) букв в зависимости от параметров
 {
 public:
-	Int_char_handler(int maxlength, int int_ok, int char_ok) { this->maxlength = maxlength; this->int_ok = int_ok; this->char_ok = char_ok; }; // получаем первым аргументом макс. длинну строки. int_ok - если работаем с числом, char_ok - если с буквой (могут быть одновременно)
+	Int_char_handler(int maxlength, int int_ok, int char_ok);
 	~Int_char_handler() {};
 	void handle(wchar_t c); // обработка буквы
 private:

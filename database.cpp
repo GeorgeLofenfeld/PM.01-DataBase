@@ -89,8 +89,8 @@ void Database_record::free_strings()
 
 wchar_t** Database_meetings_record::to_string()
 {
-	swprintf(strings[0], 50, L"%d.%d.%d", date.tm_mday, date.tm_mon, date.tm_year);
-	swprintf(strings[1], 50, L"%d:%d:%d", date.tm_hour, date.tm_min, date.tm_sec);
+	swprintf(strings[0], 50, L"%02d.%02d.%02d", date.tm_mday, date.tm_mon, date.tm_year);
+	swprintf(strings[1], 50, L"%02d:%02d:%02d", date.tm_hour, date.tm_min, date.tm_sec);
 	swprintf(strings[2], 50, L"%d", declared_cnt);
 	swprintf(strings[3], 50, L"%d", real_cnt);
 	wcscpy(strings[4], address);

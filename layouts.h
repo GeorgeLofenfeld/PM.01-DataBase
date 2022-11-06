@@ -1,5 +1,6 @@
 #pragma once
 #define FOREGROUND_YELLOW 14
+#define FOREGROUND_TURQUOISE 11
 
 void meeting_main(Frontend* fd) {
     Layout* l = fd->get_layout(1);
@@ -236,9 +237,9 @@ void exit(Frontend* fd) {
 
 Layout* create_menu_layout() {
     static Layout main_menu = Layout();
-    wchar_t names[8][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
-        L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"2022 (c) Created by George L." };
-    static Text texts[3] = { Text(5, 3, names[0]),Text(5, 5, names[1]), Text(5, 17, names[7], FOREGROUND_YELLOW)};
+    wchar_t names[9][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
+        L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"ВВЕРХ / ВНИЗ: Переключение пункта меню\nENTER: Выбор пункта меню", L"(с) 2022 Created by George L."};
+    static Text texts[4] = { Text(5, 3, names[0]), Text(5, 5, names[1]), Text(0, 39, names[7], FOREGROUND_TURQUOISE), Text(0, 44, names[8], FOREGROUND_YELLOW)};
     static Button buttons[5] = {
         Button(5, 7, names[2], go_meeting),
         Button(5, 8, names[3], go_declarers),
@@ -246,35 +247,35 @@ Layout* create_menu_layout() {
         Button(5, 11, names[5], save),
         Button(5, 12, names[6], exit)
     };
-    Layout_object* objects[8];
-    for (int i = 0; i < 3; i++)
+    Layout_object* objects[9];
+    for (int i = 0; i < 4; i++)
         objects[i] = &texts[i];
-    for (int i = 3; i < 8; i++)
-        objects[i] = &buttons[i-3];
-    main_menu.add_object(objects, 8);
+    for (int i = 4; i < 9; i++)
+        objects[i] = &buttons[i-4];
+    main_menu.add_object(objects, 9);
     return &main_menu;
 }
 
 Layout* create_meetings_layout(Database *db) { 
     static Layout meetings = Layout();
-    wchar_t names[22][128] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
+    wchar_t names[26][1024] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Разрешению", L"Назад",
         L"ДАТА", L"ВРЕМЯ", L"КОЛ. ЗАЯВ. УЧАСТН.", L"КОЛ. ФАКТ. УЧАСТН.",
-        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ", L"2022 (c) Created by George L." };
-    static Text texts[3] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 38, names[21], FOREGROUND_YELLOW) };
+        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", L"(c) 2022 Created by George L."};
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[21], FOREGROUND_TURQUOISE), Text(0, 40, names[22], FOREGROUND_TURQUOISE), Text(0, 41, names[23], FOREGROUND_TURQUOISE), Text(0, 42, names[24], FOREGROUND_TURQUOISE), Text(0, 44, names[25], FOREGROUND_YELLOW) };
     static Button buttons[11] = {
         Button(25, 3, names[2],meeting_showing),
         Button(38, 3, names[3], add_to_meetings_table),
         Button(51, 3, names[4], meetings_change),
         Button(68, 3, names[5], meetings_delete),
         Button(79, 3, names[6],meetings_search),
-        Button(25, 3, names[8],meeting_sort),
-        Button(38, 3, names[9],meeting_sort),
-        Button(45, 3, names[10],meeting_sort),
-        Button(80, 3, names[11],meeting_sort),
-        Button(115, 3, names[12],meeting_sort),
-        Button(140, 3, names[13],meeting_main),
+        Button(23, 3, names[8],meeting_sort),
+        Button(30, 3, names[9],meeting_sort),
+        Button(40, 3, names[10],meeting_sort),
+        Button(75, 3, names[11],meeting_sort),
+        Button(111, 3, names[12],meeting_sort),
+        Button(133, 3, names[13],meeting_main), // в четыре раза дальше 
     };
     wchar_t table_names[20][128];
     int sizes[7] = { 10, 10, 21, 21, 60, 60, 13 };
@@ -289,31 +290,31 @@ Layout* create_meetings_layout(Database *db) {
     static Table table = Table(0, 10, 20, 7, names[0], table_names, sizes, db);
     for (int i = 0; i < 7; i++)
         table.set_i_handler(i, kh[i]);
-    Layout_object* objects[15];
-    for (int i = 0; i < 3; i++)
+    Layout_object* objects[19];
+    for (int i = 0; i < 7; i++)
         objects[i] = &texts[i];
-    for (int i = 3; i < 14; i++)
-        objects[i] = &buttons[i - 3];
-    objects[14] = &table;
-    meetings.add_object(objects, 15);
+    for (int i = 7; i < 18; i++)
+        objects[i] = &buttons[i - 7];
+    objects[18] = &table;
+    meetings.add_object(objects, 19);
     return &meetings;
 }
 
 Layout* create_declarers_layout(Database* db) {
     static Layout declarers = Layout();
-    wchar_t names[13][128] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
-    L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
-    L"ФИО", L"Нарушениям", L"Назад", L"ФИО ЗАЯВИТЕЛЯ", L"НАЛИЧИЕ НАРУШЕНИЙ" };
-    static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) };
+    wchar_t names[18][128] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
+    L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:", 
+    L"ФИО", L"Нарушениям", L"Назад", L"ФИО ЗАЯВИТЕЛЯ", L"НАЛИЧИЕ НАРУШЕНИЙ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", L"(c) 2022 Created by George L." };
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[13], FOREGROUND_TURQUOISE), Text(0, 40, names[14], FOREGROUND_TURQUOISE), Text(0, 41, names[15], FOREGROUND_TURQUOISE), Text(0, 42, names[16], FOREGROUND_TURQUOISE), Text(0, 44, names[17], FOREGROUND_YELLOW) };
     static Button buttons[8] = {
         Button(25, 3, names[2], declarers_showing),
         Button(38, 3, names[3], add_to_declarers_table),
         Button(51, 3, names[4], declarers_change),
         Button(68, 3, names[5], declarers_delete),
         Button(79, 3, names[6], declarers_search),
-        Button(25, 3, names[8], declarers_sort),
-        Button(35, 3, names[9], declarers_sort),
-        Button(60, 3, names[10],declarers_main)
+        Button(23, 3, names[8], declarers_sort),
+        Button(29, 3, names[9], declarers_sort),
+        Button(51, 3, names[10],declarers_main)
     };
     wchar_t table_names[20][128];
     int sizes[2] = { 60, 20 };
@@ -325,36 +326,36 @@ Layout* create_declarers_layout(Database* db) {
     static Table table = Table(0, 10, 20, 2, names[0], table_names, sizes, db);
     for (int i = 0; i < 2; i++)
         table.set_i_handler(i, kh[i]);
-    Layout_object* objects[11];
-    for (int i = 0; i < 2; i++)
+    Layout_object* objects[16];
+    for (int i = 0; i < 7; i++)
         objects[i] = &texts[i];
-    for (int i = 2; i < 10; i++)
-        objects[i] = &buttons[i - 2];
-    objects[10] = &table;
-    declarers.add_object(objects, 11);
+    for (int i = 7; i < 15; i++)
+        objects[i] = &buttons[i - 7];
+    objects[15] = &table;
+    declarers.add_object(objects, 16);
     return &declarers;
 }
 
 
 Layout* create_offences_layout(Database* db) { 
     static Layout offences = Layout();
-    wchar_t names[19][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
+    wchar_t names[24][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
     L"Митингам", L"ФИО Нарушителя",  L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом",
-    L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ"};
-    static Text texts[2] = { Text(5, 3, names[1]), Text(5, 3, names[7]) }; // статик текст
+    L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", L"(c) 2022 Created by George L." };
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[19], FOREGROUND_TURQUOISE), Text(0, 40, names[20], FOREGROUND_TURQUOISE), Text(0, 41, names[21], FOREGROUND_TURQUOISE), Text(0, 42, names[22], FOREGROUND_TURQUOISE), Text(0, 44, names[23], FOREGROUND_YELLOW) }; // статик текст
     static Button buttons[11] = {
         Button(25, 3, names[2], offences_showing),
         Button(38, 3, names[3], add_to_offences_table),
         Button(51, 3, names[4], offences_change),
         Button(68, 3, names[5], offences_delete),
         Button(79, 3, names[6], offences_search),
-        Button(25, 3, names[8], offences_sort),
-        Button(35, 3, names[9], offences_sort),
-        Button(53, 3, names[10], offences_sort),
-        Button(75, 3, names[11], offences_sort),
-        Button(92, 3, names[12], offences_sort),
-        Button(125, 3, names[13],offences_main)
+        Button(23, 3, names[8], offences_sort),
+        Button(34, 3, names[9], offences_sort),
+        Button(51, 3, names[10], offences_sort),
+        Button(71, 3, names[11], offences_sort),
+        Button(89, 3, names[12], offences_sort),
+        Button(122, 3, names[13],offences_main)
     }; 
     wchar_t table_names[20][128]; // названия столбцов
     int sizes[5] = { 60, 60, 30, 30, 18}; // размеры столбцов
@@ -364,19 +365,18 @@ Layout* create_offences_layout(Database* db) {
     Int_char_handler(sizes[2], 1, 1),
     Int_char_handler(sizes[3], 1, 1) };
     static Bool_handler bh = Bool_handler();
-
     for (int i = 0; i < 5; i++)
         wcscpy(table_names[i], names[i + 14]);
     static Table table = Table(0, 10, 20, 5, names[0], table_names, sizes, db);
     for (int i = 0; i < 4; i++)
         table.set_i_handler(i, &ich[i]);
     table.set_i_handler(4, &bh);
-    Layout_object* objects[14]; // массив наследников layout_object, к ним всем можно обращаться по ссылке layout_object*
-    for (int i = 0; i < 2; i++)
+    Layout_object* objects[19]; // массив наследников layout_object, к ним всем можно обращаться по ссылке layout_object*
+    for (int i = 0; i < 7; i++)
         objects[i] = &texts[i]; // кладём на первые позиции фоновый текст
-    objects[2] = &table; // положили адрес таблицы
+    objects[7] = &table; // положили адрес таблицы
     for (int i = 0; i < 11; i++) // Добавление кнопок в массив объектов
-        objects[i + 3] = &buttons[i]; 
-    offences.add_object(objects, 14); // добавили в layout n объектов
+        objects[i + 8] = &buttons[i]; 
+    offences.add_object(objects, 19); // добавили в layout n объектов
     return &offences; // вернули layout по ссылке 
 }
