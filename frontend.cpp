@@ -76,7 +76,7 @@ Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t 
 	this->col_cnt = col_cnt+1;
 	wcscpy(this->caption, caption);
 	wcscpy(this->names[0], L"№");
-	this->sizes[0] = 4;
+	this->sizes[0] = 8;
 	this->db = db;
 	for (int i = 0; i < col_cnt; i++) {
 		wcscpy(this->names[i+1], names[i]);
@@ -318,7 +318,10 @@ void Table::print_adding_row(int a_y)
 
 void Table::print_error_message()
 {
-	move_cursor_to(x+50, y + row_cnt + 3 + 2);
+	int cur_x = x;
+	for (int i = 0; i < col_cnt; i++)
+		cur_x += sizes[i];
+	move_cursor_to(x + (cur_x - x - wcslen(caption)) / 2, y + row_cnt + 3 + 2);
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_RED);
 	printf("%ls", error_message);
@@ -493,9 +496,17 @@ void Frontend::stop() {
 	exit = 1; // выход из цикла внутри Frontend::run, завершается программа, т.к. цикл внутри метода run завершён (сам  цикл отвечает за работу программы) 
 }
 
+void Frontend::wait()
+{
+	waiting = 1;
+}
+
 void Frontend::clear_screen()
 {
-	system("@cls||clear");
+	if (waiting)
+		waiting = 0;
+	else
+		system("@cls||clear");
 }
 
 void Frontend::run() {

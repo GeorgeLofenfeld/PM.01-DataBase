@@ -148,10 +148,10 @@ int Database_meetings_record::compare(Database_record* y, int index)
 		return this->declared_cnt > y_m->declared_cnt;
 	case 3:
 		return this->real_cnt > y_m->real_cnt;
-	case 4:
+	case 6:
 		return this->permitted < y_m->permitted;
 	default:
-		break;
+		return wcscmp(this->to_string()[index], y_m->to_string()[index]) > 0;
 	}
 	return 0;
 }

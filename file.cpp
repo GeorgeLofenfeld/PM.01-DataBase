@@ -97,7 +97,7 @@ void Base_operator::initializate()
 	}
 }
 
-void Base_operator::save()
+int Base_operator::save()
 {
 	FILE *out = fopen(path, "w");
 	if (out) {
@@ -110,7 +110,9 @@ void Base_operator::save()
 			}
 		}
 		fclose(out);
+		return 1;
 	}
+	return 0;
 }
 
 void Base_operator::realloc_array(base_type bt, int cnt)

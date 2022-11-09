@@ -34,6 +34,8 @@ public:
 		visible = saved_state[1];
 		deactivated = 0;
 	}
+	int get_x() { return x; };
+	int get_y() { return y; };
 	int get_is_background() {return is_background;}
 protected:
 	int x; // координата позиции layout_object
@@ -163,10 +165,12 @@ public:
 	void change_layout(int index); // сменяет текущий layout
 	void leave(); 
 	void stop();
+	void wait();
 private:
 	Key_reader reader;
 	Layout *layouts[10]; // Список всех вёрсток (меню, таблицы)
 	int current_layout_idx = 0;
 	int exit = 0;
 	void clear_screen();
+	int waiting = 0;
 };

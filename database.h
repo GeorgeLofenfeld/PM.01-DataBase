@@ -114,7 +114,7 @@ public:
 	Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types);
 	~Base_operator();
 	void initializate();
-	void save();
+	int save();
 	int has_errors() { return error; };
 	Database_record* add(wchar_t words[20][128], base_type bt);
 private:
@@ -124,7 +124,6 @@ private:
 	void realloc_array(base_type bt, int cnt);
 	char path[128]="";
 	Database_record* read(FILE* in, base_type bt);
-	void print(FILE* out, wchar_t** str, int str_cnt);
 	int error = 0;
 	Database_meetings_record** meetings_data;
 	Database_offences_record** offences_data;
