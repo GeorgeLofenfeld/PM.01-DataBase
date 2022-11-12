@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include "database.h"
 #include <wchar.h>
+#include "frontend.h"
+
+void mem_check_err() {
+	printf("Ошибка выделения памяти");
+	_Exit(EXIT_SUCCESS);
+}
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {
 	this->dbs = dbs;
@@ -10,6 +16,9 @@ Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type
 	meetings_data = (Database_meetings_record**)malloc(sizeof(Database_meetings_record*) * meetings_data_size);
 	declarers_data = (Database_declarers_record**)malloc(sizeof(Database_declarers_record*) * declarers_data_size);
 	offences_data = (Database_offences_record**)malloc(sizeof(Database_offences_record*) * offences_data_size);
+	if ((meetings_data == NULL) || (declarers_data == NULL) || (offences_data == NULL)) {
+		mem_check_err();
+	} 
 }
 
 Base_operator::~Base_operator() {
@@ -105,7 +114,6 @@ int Base_operator::save()
 			int base_size = dbs[i]->get_size();
 			fprintf(out, "%s %d\n", bt_to_str(dbs[i]->get_type()), base_size);
 			for (int j = 0; j < base_size; j++) {
-				//print(out, dbs[i]->get_record(j)->to_string(), dbs[i]->get_record(j)->get_field_cnt());
 				fprintf(out, "%ls\n", dbs[i]->get_record(j)->to_line());
 			}
 		}
@@ -124,18 +132,27 @@ void Base_operator::realloc_array(base_type bt, int cnt)
 		if (cnt > meetings_data_size) {
 			meetings_data = (Database_meetings_record**)realloc(meetings_data, sizeof(Database_meetings_record*) * cnt);
 			meetings_data_size = cnt;
+			if (meetings_data == NULL) {
+				mem_check_err();
+			}
 		}
 		break;
 	case base_type::declarers:
 		if (cnt > declarers_data_size) {
 			declarers_data = (Database_declarers_record**)realloc(declarers_data, sizeof(Database_declarers_record*) * cnt);
 			declarers_data_size = cnt;
+			if (declarers_data == NULL) {
+				mem_check_err();
+			}
 		}
 		break;
 	case base_type::offences:
 		if (cnt > offences_data_size) {
 			offences_data = (Database_offences_record**)realloc(offences_data, sizeof(Database_offences_record*) * cnt);
 			offences_data_size = cnt;
+			if (offences_data == NULL) {
+				mem_check_err();
+			}
 		}
 		break;
 	default:

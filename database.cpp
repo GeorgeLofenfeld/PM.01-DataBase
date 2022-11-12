@@ -7,6 +7,10 @@ Database::Database(int cnt)
 	list_size = cnt > 5 ? (cnt + cnt / 2) : 10;
 	base = (Database_record**)malloc(list_size * sizeof(Database_record*));
 	base[0] = NULL;
+	if (base == NULL) {
+		printf("Ошибка выделения памяти");
+		_Exit(EXIT_SUCCESS);
+	}
 }
 
 Database::~Database()
@@ -40,6 +44,10 @@ void Database::add_record(Database_record* rec) {
 	if (cnt == list_size - 1) {
 		list_size = list_size + list_size / 2;
 		base = (Database_record**)realloc(base, list_size * sizeof(Database_record*));
+		if (base == NULL) {
+			printf("Ошибка выделения памяти");
+			_Exit(EXIT_SUCCESS);
+		}
 	}
 	base[cnt] = NULL;
 }
@@ -76,8 +84,17 @@ void Database_record::malloc_strings()
 {
 
 	strings = (wchar_t**)malloc(20 * sizeof(wchar_t*));
-	for (int i = 0; i < 20; i++)
+	if (strings == NULL) {
+		printf("Ошибка выделения памяти");
+		_Exit(EXIT_SUCCESS);
+	}
+	for (int i = 0; i < 20; i++) {
 		strings[i] = (wchar_t*)malloc(128 * sizeof(wchar_t));
+		if (strings[i] == NULL) {
+			printf("Ошибка выделения памяти");
+			_Exit(EXIT_SUCCESS);
+		}
+	}
 }
 
 void Database_record::free_strings()

@@ -15,7 +15,13 @@ class Key_handler;
 class Layout_object // Абстракция объекта layout'a, все остальные объекты наследуются
 {
 public:
-	Layout_object() { available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); }; 
+	Layout_object() { 
+		available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); 
+		if (available_keys == NULL) {
+			printf("Ошибка выделения памяти");
+			_Exit(EXIT_SUCCESS);
+		}
+	}; 
 	~Layout_object() { free(available_keys); };
 	virtual void print() = 0; // отрисовка
 	virtual void react(wchar_t key) = 0; // реакция на переданную клавишу
