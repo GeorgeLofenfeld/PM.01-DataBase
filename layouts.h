@@ -1,8 +1,13 @@
-#pragma once
+#pragma once 
 #define FOREGROUND_YELLOW 14
 #define FOREGROUND_TURQUOISE 11
 
-void meeting_main(Frontend* fd) {
+void meeting_main(Frontend* fd) { 
+    /*
+    Переключается между отображаемыми наборами кнопок
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
     Layout* l = fd->get_layout(1);
     wchar_t names_to_hide[9][128] = { L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Адресу", L"ФИО Заявителя", L"Разрешению", L"Назад" };
@@ -39,6 +44,11 @@ void offences_main(Frontend* fd) {
 }
 
 void meeting_showing(Frontend* fd){
+    /*
+    Переключается между отображаемыми наборами кнопок (инверсивно по отношению к meeting_main etc.)
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
     Layout* l = fd->get_layout(1);
     wchar_t names_to_show[9][128] = { L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Адресу", L"ФИО Заявителя", L"Разрешению", L"Назад" };
@@ -75,6 +85,11 @@ void offences_showing(Frontend* fd) {
 }
 
 void go_meeting(Frontend* fd) {
+    /*
+    Переход на другой layout
+    ***
+    ринимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
     fd->change_layout(1);
     meeting_main(fd);
 }
@@ -89,34 +104,27 @@ void go_offences(Frontend* fd) {
     offences_main(fd);
 }
 
-Table* get_meetings_table(Frontend* fd, int choose = 1) {
-    Layout* l = fd->get_layout(1);
-    wchar_t t_name[128] = L"ТАБЛИЦА МИТИНГОВ";
-    Table* table = (Table*)l->get_object_by_caption(t_name);
+Table* get_table(Frontend* fd, int i, int choose = 1) {
+    /*
+    Вспомогательная функция для получения ссылки на таблцу из конкретного layout
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие), i - индекс layout, choose - если 1, то таблица считается выбранной
+    */
+    Layout* l = fd->get_layout(i);
+    wchar_t t_name[3][128] = { L"ТАБЛИЦА МИТИНГОВ", L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ" };
+    Table* table = (Table*)l->get_object_by_caption(t_name[i-1]);
     if (choose)
         l->change_swichable_object(table);
     return table;
 }
 
-Table* get_declarers_table(Frontend* fd, int choose = 1) {
-    Layout* l = fd->get_layout(2);
-    wchar_t t_name[128] = L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ";
-    Table* table = (Table*)l->get_object_by_caption(t_name);
-    if (choose)
-        l->change_swichable_object(table);
-    return table;
-}
-
-Table* get_offences_table(Frontend* fd, int choose = 1) {
-    Layout* l = fd->get_layout(3);
-    wchar_t t_name[128] = L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ";
-    Table* table = (Table*)l->get_object_by_caption(t_name);
-    if (choose)
-        l->change_swichable_object(table);
-    return table;
-}
 
 void meeting_sort(Frontend* fd) {
+    /*
+    Вызывает сортировку в зависимости от нажатой кнопки
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
     Layout* l = fd->get_layout(1);
     Layout_object* lo = l->get_chosen_object();
     wchar_t names[7][128] = {L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Адресу", L"ФИО Заявителя", L"Разрешению" };
@@ -125,7 +133,7 @@ void meeting_sort(Frontend* fd) {
         for (int i = 0; i < 7; i++)
             if (wcscmp(names[i], lo->get_caption()) == 0)
                 index = i;
-        Table* table = get_meetings_table(fd, 0);
+        Table* table = get_table(fd, 1, 0);
         if (index >= 0)
             table->get_database()->sort_by_index(index);
     }
@@ -140,7 +148,7 @@ void declarers_sort(Frontend* fd) {
         for (int i = 0; i < 2; i++)
             if (wcscmp(names[i], lo->get_caption()) == 0)
                 index = i;
-        Table* table = get_declarers_table(fd, 0);
+        Table* table = get_table(fd, 2, 0);
         if (index >= 0)
             table->get_database()->sort_by_index(index);
     }
@@ -155,78 +163,103 @@ void offences_sort(Frontend* fd) {
         for (int i = 0; i < 5; i++)
             if (wcscmp(names[i], lo->get_caption()) == 0)
                 index = i;
-        Table* table = get_offences_table(fd, 0);
+        Table* table = get_table(fd, 3, 0);
         if (index >= 0)
             table->get_database()->sort_by_index(index);
     }
 }
 
 void add_to_meetings_table(Frontend* fd) {
-    Table* table = get_meetings_table(fd);
+    /*
+    Запускает процесс добавления данных в таблицу
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
+    Table* table = get_table(fd, 1);
     table->change_state(Table::adding);
 
 }
 
 void add_to_declarers_table(Frontend* fd) {
-    Table* table = get_declarers_table(fd);
+    Table* table = get_table(fd, 2);
     table->change_state(Table::adding);
 
 }
 
 void add_to_offences_table(Frontend* fd) {
-    Table* table = get_offences_table(fd);
+    Table* table = get_table(fd, 3);
     table->change_state(Table::adding);
 
 }
 
 void meetings_delete(Frontend* fd) {
-    Table* table = get_meetings_table(fd);
+    /*
+    Запускает процесс выбора данных для удаления из таблицы
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
+    Table* table = get_table(fd, 1);
     table->change_state(Table::deleting);
 }
 
 void declarers_delete(Frontend* fd) {
-    Table* table = get_declarers_table(fd);
+    Table* table = get_table(fd, 2);
     table->change_state(Table::deleting);
 }
 
 void offences_delete(Frontend* fd) {
-    Table* table = get_offences_table(fd);
+    Table* table = get_table(fd, 3);
     table->change_state(Table::deleting);
 }
 
 
 void meetings_change(Frontend* fd) {
-    Table* table = get_meetings_table(fd);
+    /*
+    Запускает процесс выбора данных для изменения в таблице (построчно)
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
+    Table* table = get_table(fd, 1);
     table->change_state(Table::choosing_for_changing);
 }
 
 void declarers_change(Frontend* fd) {
-    Table* table = get_declarers_table(fd);
+    Table* table = get_table(fd, 2);
     table->change_state(Table::choosing_for_changing);
 }
 
 void offences_change(Frontend* fd) {
-    Table* table = get_offences_table(fd);
+    Table* table = get_table(fd, 3);
     table->change_state(Table::choosing_for_changing);
 }
 
 void meetings_search(Frontend* fd) {
-    Table* table = get_meetings_table(fd);
+    /*
+    Запускает процесс поиска
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
+    Table* table = get_table(fd, 1);
     table->change_state(Table::searching);
 }
 
 void declarers_search(Frontend* fd) {
-    Table* table = get_declarers_table(fd);
+    Table* table = get_table(fd, 2);
     table->change_state(Table::searching);
 }
 
 void offences_search(Frontend* fd) {
-    Table* table = get_offences_table(fd);
+    Table* table = get_table(fd, 3);
     table->change_state(Table::searching);
 }
 
 void save(Frontend* fd) {
-    Table* table = get_meetings_table(fd, 0);
+    /*
+    Запускает процесс сохранения данных из всех таблиц
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
+    Table* table = get_table(fd, 1, 0);
     int ok = table->get_database()->get_base_operator()->save();// get_base_operator един для всех
     Layout* l = fd->get_layout(0);
     wchar_t t_name[128] = L"Сохранить";
@@ -247,11 +280,19 @@ void save(Frontend* fd) {
 }
 
 void exit(Frontend* fd) {
+    /*
+    Запускает процесс выхода из программы при нажатии кнопки "Выход"
+    ***
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    */
     fd->stop();
 }
 
 
 Layout* create_menu_layout() {
+    /*
+    Сборка и создание menu layout
+    */
     static Layout main_menu = Layout();
     wchar_t names[9][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
         L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"ВВЕРХ / ВНИЗ: Переключение пункта меню\nENTER: Выбор пункта меню", L"(с) 2022 Created by George L."};
@@ -273,6 +314,11 @@ Layout* create_menu_layout() {
 }
 
 Layout* create_meetings_layout(Database *db) { 
+    /*
+    Сборка и создание meetings layout
+    ***
+    Принимает ссылку на Database (конкретную базу данных)
+    */
     static Layout meetings = Layout();
     wchar_t names[28][1024] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
@@ -319,6 +365,11 @@ Layout* create_meetings_layout(Database *db) {
 }
 
 Layout* create_declarers_layout(Database* db) {
+    /*
+    Сборка и создание declarers layout
+    ***
+    Принимает ссылку на Database (конкретную базу данных)
+    */
     static Layout declarers = Layout();
     wchar_t names[18][128] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:", 
@@ -356,6 +407,11 @@ Layout* create_declarers_layout(Database* db) {
 
 
 Layout* create_offences_layout(Database* db) { 
+    /*
+    Сборка и создание offences layout
+    ***
+    Принимает ссылку на Database (конкретную базу данных)
+    */
     static Layout offences = Layout();
     wchar_t names[24][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",

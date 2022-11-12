@@ -1,18 +1,21 @@
 #pragma once
 #include <string.h>
-#include <windows.h>
+#include <windows.h> // Работа с графикой
 #include <stdio.h>
-#include <conio.h>
+#include <conio.h> // console input output
 #include "database.h"
 #include "handler.h"
 
-#define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED)
+#define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED) // определяем белый цвет
 
 class Layout; // объявляем заранее, опишем позже. Исключение взаимной рекурсии в layout_object (аналогично с frontend и key_handler)
 class Frontend; 
 class Key_handler;
 
 class Layout_object // Абстракция объекта layout'a, все остальные объекты наследуются
+	/*
+    Класс элемента layout, содержит информацию об элементе (как внешнюю, так и техническую) 
+    */
 {
 public:
 	Layout_object() { 

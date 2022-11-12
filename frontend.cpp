@@ -1,5 +1,4 @@
 #include "frontend.h"
-#define _CRT_NON_CONFORMING_WCSTOK
 #include <wchar.h>
 
 #define FOREGROUND_YELLOW 14
@@ -361,10 +360,10 @@ void Table::delete_chosen_row()
 
 Layout::Layout()
 {
-	available_keys[0] = 72;//KEY_UP 
-	available_keys[1] = 80;//KEY_DOWN 
-	available_keys[2] = 27;//ESC
-	available_keys[3] = 0;//end of string for correct work
+	available_keys[0] = 72; //KEY_UP 
+	available_keys[1] = 80; //KEY_DOWN 
+	available_keys[2] = 27; //ESC
+	available_keys[3] = 0;  //end of string for correct work
 }
 
 

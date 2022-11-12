@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include "database.h"
-#include <wchar.h>
+#include <wchar.h> // wide char - широкий символ - работа с алфавитами
 #include "frontend.h"
+#define _CRT_NON_CONFORMING_WCSTOK // Нужно для работы функции wcstok 
 
-void mem_check_err() {
-	printf("Ошибка выделения памяти");
-	_Exit(EXIT_FAILURE);
-}
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {
 	this->dbs = dbs;
@@ -130,7 +127,7 @@ void Base_operator::realloc_array(base_type bt, int cnt)
 	{
 	case base_type::meetings:
 		if (cnt > meetings_data_size) {
-			meetings_data = (Database_meetings_record**)realloc(meetings_data, sizeof(Database_meetings_record*) * cnt);
+			meetings_data = (Database_meetings_record**)realloc(meetings_data, sizeof(Database_meetings_record*) * cnt); 
 			meetings_data_size = cnt;
 			if (meetings_data == NULL) {
 				mem_check_err();

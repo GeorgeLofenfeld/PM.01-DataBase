@@ -10,7 +10,7 @@ Database::Database(int cnt)
 	this->cnt = cnt;
 	list_size = cnt > 5 ? (cnt + cnt / 2) : 10;
 	base = (Database_record**)malloc(list_size * sizeof(Database_record*));
-	base[0] = NULL;
+	base[0] = NULL; 
 	if (base == NULL) {
 		mem_check_err();
 	}
@@ -112,9 +112,6 @@ wchar_t** Database_meetings_record::to_string()
 	swprintf(strings[3], 50, L"%d", real_cnt);
 	wcscpy(strings[4], address);
 	wcscpy(strings[5], declarers);
-	/*for (int i =0; i <declarers_cnt; i++)
-		swprintf(strings[5] + strlen(strings[5]), "%d_", ids[i]);
-	*/
 	if (permitted)
 		wcscpy(strings[6], L"ÄÀ");
 	else

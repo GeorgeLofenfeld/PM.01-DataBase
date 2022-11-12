@@ -1,8 +1,10 @@
-#pragma once
-#include <string.h>
-#include <cstdlib>
-#include <time.h>
-#include <stdio.h>
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include <string.h> // работа со строками
+#include <cstdlib> // Выделение памяти, контроль процесса выполнения программы, преобразование типов
+#include <time.h> // Использование встроенной структуры tm 
+#include <stdio.h> // standart input output
+
+void mem_check_err();
 
 class Base_operator;
 
