@@ -1,5 +1,9 @@
 #include "database.h"
 
+void mem_check_err() {
+	printf("Ошибка выделения памяти");
+	_Exit(EXIT_FAILURE);
+}
 
 Database::Database(int cnt)
 {
@@ -8,8 +12,7 @@ Database::Database(int cnt)
 	base = (Database_record**)malloc(list_size * sizeof(Database_record*));
 	base[0] = NULL;
 	if (base == NULL) {
-		printf("Ошибка выделения памяти");
-		_Exit(EXIT_SUCCESS);
+		mem_check_err();
 	}
 }
 
@@ -45,8 +48,7 @@ void Database::add_record(Database_record* rec) {
 		list_size = list_size + list_size / 2;
 		base = (Database_record**)realloc(base, list_size * sizeof(Database_record*));
 		if (base == NULL) {
-			printf("Ошибка выделения памяти");
-			_Exit(EXIT_SUCCESS);
+			mem_check_err();
 		}
 	}
 	base[cnt] = NULL;
@@ -85,14 +87,12 @@ void Database_record::malloc_strings()
 
 	strings = (wchar_t**)malloc(20 * sizeof(wchar_t*));
 	if (strings == NULL) {
-		printf("Ошибка выделения памяти");
-		_Exit(EXIT_SUCCESS);
+		mem_check_err();
 	}
 	for (int i = 0; i < 20; i++) {
 		strings[i] = (wchar_t*)malloc(128 * sizeof(wchar_t));
 		if (strings[i] == NULL) {
-			printf("Ошибка выделения памяти");
-			_Exit(EXIT_SUCCESS);
+			mem_check_err();
 		}
 	}
 }
@@ -130,13 +130,6 @@ void Database_meetings_record::from_string(wchar_t str[20][128])
 	swscanf(str[3], L"%d", &real_cnt);
 	wcscpy(address, str[4]);
 	wcscpy(declarers, str[5]);
-	/*sscanf(str[4], "%d", &declarers_cnt);
-	int shift = 0;
-	int n = 0;
-	for (int i = 0; i < declarers_cnt; i++) {
-		sscanf(str[5]+shift, "%d%n_", &ids[i], &n);
-		shift += n+1;
-	}*/
 	if (wcscmp(str[6], L"ДА") == 0)
 		permitted = 1;
 	else

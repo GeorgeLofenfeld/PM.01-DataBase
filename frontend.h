@@ -19,7 +19,7 @@ public:
 		available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); 
 		if (available_keys == NULL) {
 			printf("Ошибка выделения памяти");
-			_Exit(EXIT_SUCCESS);
+			_Exit(EXIT_FAILURE);
 		}
 	}; 
 	~Layout_object() { free(available_keys); };

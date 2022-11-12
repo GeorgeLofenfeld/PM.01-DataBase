@@ -5,7 +5,7 @@
 
 void mem_check_err() {
 	printf("Ошибка выделения памяти");
-	_Exit(EXIT_SUCCESS);
+	_Exit(EXIT_FAILURE);
 }
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {

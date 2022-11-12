@@ -22,7 +22,7 @@ public:
 	int is_string_found() { return string_found; };
 protected:
 	int id=-1;
-	wchar_t** strings;// [20] [128] ;
+	wchar_t** strings;
 	wchar_t line[2560] = L"";
 	void malloc_strings();
 	void free_strings();
@@ -43,8 +43,6 @@ private:
 	wchar_t address[128];
 	int declared_cnt = 0;
 	int real_cnt = 0;
-	//int ids[100];
-	//int declarers_cnt=0;
 	wchar_t declarers[128];
 	int permitted=0;
 };
