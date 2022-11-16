@@ -4,7 +4,7 @@
 	***
 	Вариант 30 - База Данных Митингов
 	***
-	Для чего модуль?
+	Модуль, реализующий визуальную часть приложения, взаимодействие с пользователем
 */
 
 #pragma once
@@ -16,6 +16,8 @@
 #include "handler.h"
 
 #define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED) // определяем белый цвет
+
+void move_cursor_to(int x, int y);
 
 class Layout; // объявляем заранее, опишем позже. Исключение взаимной рекурсии в layout_object (аналогично с frontend и key_handler)
 class Frontend; 

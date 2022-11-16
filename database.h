@@ -4,7 +4,7 @@
 	***
 	Вариант 30 - База Данных Митингов
 	***
-	Для чего модуль?
+	Модуль описывающий базу данных и её элементы, а так же класс для взаимодействия базы данных и файла
 */
 
 #pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
@@ -19,43 +19,43 @@ class Base_operator;
 
 enum base_type { meetings, declarers, offences, error };
 
-class Database_record
+class Database_record // Виртуальный класс, описывающий абстрактный элемент базы данных
 {
 public:
-	virtual void from_string(wchar_t str[20][128]) = 0;
-	virtual wchar_t** to_string() = 0;
-	wchar_t* to_line();
-	Database_record() { malloc_strings(); };
-	~Database_record() { free_strings(); };
-	int get_field_cnt() { return field_cnt; };
-	virtual int compare(Database_record* y, int index) = 0;
-	void find_string(wchar_t* str);
-	int is_string_found() { return string_found; };
-protected:
-	int id=-1;
-	wchar_t** strings;
-	wchar_t line[2560] = L"";
-	void malloc_strings();
-	void free_strings();
-	int field_cnt = 0;
-	int string_found = 0;
+	virtual void from_string(wchar_t str[20][128]) = 0; // Виртуальная функция, которая в наследниках отвечает за перевод из набора строк в объект класса
+	virtual wchar_t** to_string() = 0; // Виртуальная функция, которая отвечает за перевод из объекта класса в набор строк 
+	wchar_t* to_line(); // Функция, которая отвечает за перевод в одну строку из объекта класса
+	Database_record() { malloc_strings(); }; // Конструктор 
+	~Database_record() { free_strings(); }; // Деструктор
+	int get_field_cnt() { return field_cnt; }; // Получение количества столбцов
+	virtual int compare(Database_record* y, int index) = 0; // Виртуальная функция для сравнения двух объектов класса по значению поля класса под индексом (используется в сортировке)
+	void find_string(wchar_t* str); // Поиск подстроки в строковом представлении объекта класса
+	int is_string_found() { return string_found; }; // Найдена ли подстрока
+protected: // Недоступен вне класса, но наследуется
+	int id=-1; // id записи
+	wchar_t** strings; // Буфер для хранения строкового представления объекта класса в виде набора строк
+	wchar_t line[2560] = L""; // Буфер для хранения представления в виде одной строки
+	void malloc_strings(); // Выделение памяти под буферы
+	void free_strings(); // Очищения буфера строк
+	int field_cnt = 0; // Количество столбцов
+	int string_found = 0; // Найдена ли подстрока
 };
 
-class Database_meetings_record : public Database_record
+class Database_meetings_record : public Database_record // Класс для элемента базы данных о митингах
 {
 public:
-	Database_meetings_record() { field_cnt = 7; };
+	Database_meetings_record() { field_cnt = 7; }; // Указываем, что в данной таблице 7 полей
 	~Database_meetings_record() {};
 	wchar_t** to_string();
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index);
 private:
-	struct tm date = {};
-	wchar_t address[128] = {};
-	int declared_cnt = 0;
-	int real_cnt = 0;
-	wchar_t declarers[128] = {};
-	int permitted=0;
+	struct tm date = {}; // Встроенная структура для даты и времени
+	wchar_t address[128] = {}; // Для хранения данных о адресе митинга
+	int declared_cnt = 0; // Для хранения данных о кол-ве заявленных участников
+	int real_cnt = 0; // Для хранения данных о кол-ве фактических участников
+	wchar_t declarers[128] = {}; // Для хранения данных о кол-ве заявителей
+	int permitted = 0; // Разрешенность (только 0 или 1)
 };
 
 class Database_offences_record : public Database_record
@@ -89,58 +89,58 @@ private:
 	int has_offenses_flag = 0;
 };
 
-void quickSort(Database_record*** array, int index, int low, int high);
+void quickSort(Database_record*** array, int index, int low, int high); // Объявление функции быстрой сортировки
 
-class Database
+class Database // Класс самой базы данных
 {
 public:
-	Database(int cnt=0);
-	void add_record(Database_record* rec);
-	void add_record(wchar_t str[20][128]);
-	Database_record** get_data();
+	Database(int cnt = 0); 
+	void add_record(Database_record* rec); // Добавляет запись
+	void add_record(wchar_t str[20][128]); // Переводит набор строк в запись и добавляет её
+	Database_record** get_data(); // Получение указателя на массив записей
 	~Database();
-	void set_type(base_type type) { this->type = type; };
-	base_type get_type() { return type; }
-	void set_base_operator(Base_operator *bop) { this->bop = bop; }
-	Base_operator* get_base_operator() { return bop; }
-	int get_size() { return cnt; }
-	Database_record* get_record(int i) { return base[i]; }
-	void delete_record(int i);
-	void change_record(int i, wchar_t str[20][128]);
-	void sort_by_index(int index) { quickSort(&base, index, 0, cnt - 1); }
-	void search(wchar_t* str);
+	void set_type(base_type type) { this->type = type; }; // Устанавливает тип базы данных (Митинги, Заявители, Правонарушения)
+	base_type get_type() { return type; } // Возвращает тип базы данных
+	void set_base_operator(Base_operator *bop) { this->bop = bop; } 
+	Base_operator* get_base_operator() { return bop; } // Возвращает base_operator
+	int get_size() { return cnt; } // Возвращает размер базы данных (количество записей)
+	Database_record* get_record(int i) { return base[i]; } // Возвращает по индексу запись из базы данных
+	void delete_record(int i); // Удаление записи по индексу
+	void change_record(int i, wchar_t str[20][128]); // Изменение записи по индексу
+	void sort_by_index(int index) { quickSort(&base, index, 0, cnt - 1); } // Сортировка по индексу
+	void search(wchar_t* str); // Сортировка базы данных по параметру совпадения с искомой строкой
 private:
-	int cnt = -1;
-	int list_size = 10;
-	Database_record** base;
+	int cnt = -1; // Фактическое количество записей 
+	int list_size = 10; // Размер выделения памяти динамического массива
+	Database_record** base = {};
 	base_type type = error;
-	Base_operator* bop;
+	Base_operator* bop = {};
 };
 
-class Base_operator
+class Base_operator // Класс для взаимодействия базы данных и файлов
 {
 public:
-	Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types);
+	Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types); // Получает путь к файлу, а так же список баз данных, которые с ним связанны, их количество и типы
 	~Base_operator();
-	void initializate();
-	int save();
-	int has_errors() { return error; };
-	Database_record* add(wchar_t words[20][128], base_type bt);
+	void initializate(); // Преобразование информации из файла в базу данных
+	int save(); // Преобразование информации базы данных в файл
+	int has_errors() { return error; }; // Возвращает 1 если возникли ошибки при работе с файлом
+	Database_record* add(wchar_t words[20][128], base_type bt); // Добавление записи в оперативную память
 private:
-	Database** dbs;
-	int base_cnt;
-	base_type* base_types;
-	void realloc_array(base_type bt, int cnt);
-	char path[128]="";
-	Database_record* read(FILE* in, base_type bt);
-	int error = 0;
-	Database_meetings_record** meetings_data;
-	Database_offences_record** offences_data;
-	Database_declarers_record** declarers_data;
-	int meetings_cnt = 0;
+	Database** dbs = {}; // Список связанных баз данных с файлом
+	int base_cnt = 0; // Количество баз данных
+	base_type* base_types = {}; // Типы баз данных
+	void realloc_array(base_type bt, int cnt); // Перевыделение памяти при добавлении новой записи (при необходимости)
+	char path[128] = {}; // Путь к файлу
+	Database_record* read(FILE* in, base_type bt); // Чтение из файла
+	int error = 0; // Наличие ошибки работы с файлом
+	Database_meetings_record** meetings_data = {}; // Динамическая память, хранящая в себе все записи данного типа
+	Database_offences_record** offences_data = {}; 
+	Database_declarers_record** declarers_data = {};
+	int meetings_cnt = 0; // Количество записей
 	int offences_cnt = 0;
 	int declarers_cnt = 0;
-	int meetings_data_size = 10;
+	int meetings_data_size = 10; // Размер выделенной динамической памяти
 	int offences_data_size = 10;
 	int declarers_data_size = 10;
 };
