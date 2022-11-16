@@ -1,3 +1,12 @@
+/*
+	Лофенфельд Георгий Владимирович
+	ПКС - 303
+	***
+	Вариант 30 - База Данных Митингов
+	***
+	Для чего модуль?
+*/
+
 #pragma once
 #include <string.h>
 #include <windows.h> // Работа с графикой
@@ -47,13 +56,13 @@ public:
 	int get_y() { return y; };
 	int get_is_background() {return is_background;}
 protected:
-	int x; // координата позиции layout_object
-	int y; // координата позиции layout_object
+	int x = 0; // координата позиции layout_object
+	int y = 0; // координата позиции layout_object
 	int is_swichable = 0; // флаг отвечающий за то, можно ли выбрать этот layout_object или нельзя (text-table-button, равен нулю только у текста) 
 	int swiched = 0; // если выбран данный layout_object 
 	wchar_t *available_keys; 
-	Layout* lt; // ссылка на тот layout, в котором содержится layout_object 
-	wchar_t caption[100]; // название layout_object'a
+	Layout* lt = 0; // ссылка на тот layout, в котором содержится layout_object 
+	wchar_t caption[100] = {}; // название layout_object'a
 	int visible = 1; // видимость layout_object'a (может реагировать если не видим, остается в списке объектов layout'a)
 	int saved_state[2]={is_swichable, visible}; // перед деактивацией сохраняем состояние 
 	void save_state() { // метод для сохранения состояния

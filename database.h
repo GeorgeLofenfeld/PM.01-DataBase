@@ -1,3 +1,12 @@
+/*
+	Лофенфельд Георгий Владимирович
+	ПКС - 303
+	***
+	Вариант 30 - База Данных Митингов
+	***
+	Для чего модуль?
+*/
+
 #pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
 #include <string.h> // работа со строками
 #include <cstdlib> // Выделение памяти, контроль процесса выполнения программы, преобразование типов
@@ -41,11 +50,11 @@ public:
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index);
 private:
-	struct tm date;
-	wchar_t address[128];
+	struct tm date = {};
+	wchar_t address[128] = {};
 	int declared_cnt = 0;
 	int real_cnt = 0;
-	wchar_t declarers[128];
+	wchar_t declarers[128] = {};
 	int permitted=0;
 };
 
@@ -58,11 +67,11 @@ public:
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index) { return 0; };
 private:
-	int meeting_id;
-	wchar_t meeting[128];
-	wchar_t offender_full_name[128];
-	wchar_t normative_act[128];
-	wchar_t article_and_paragraph[128];
+	int meeting_id = 0;
+	wchar_t meeting[128] = {};
+	wchar_t offender_full_name[128] = {};
+	wchar_t normative_act[128] = {};
+	wchar_t article_and_paragraph[128] = {};
 	int conviction_flag = 0;
 };
 
@@ -76,7 +85,7 @@ public:
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index);
 private:
-	wchar_t full_name[128];
+	wchar_t full_name[128] = {};
 	int has_offenses_flag = 0;
 };
 

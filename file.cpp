@@ -1,3 +1,12 @@
+/*
+	Лофенфельд Георгий Владимирович
+	ПКС - 303
+	***
+	Вариант 30 - База Данных Митингов
+	***
+	Для чего модуль?
+*/
+
 #include <stdio.h>
 #include "database.h"
 #include <wchar.h> // wide char - широкий символ - работа с алфавитами
@@ -160,10 +169,10 @@ void Base_operator::realloc_array(base_type bt, int cnt)
 Database_record* Base_operator::read(FILE* in, base_type bt) {
 	Database_record* answer = NULL;
 	wchar_t line[2560];
-	wchar_t words[20][128];
+	wchar_t words[20][128] = {};
 	wchar_t delim[] = L"|";
 	fgetws(line, 2560, in);
-	wchar_t* rowstate;
+	wchar_t* rowstate = 0;
 	line[wcslen(line) - 1] = 0;// remove \n
 	wchar_t* ptr = wcstok_s(line, delim,&rowstate);
 	int cnt = 0;

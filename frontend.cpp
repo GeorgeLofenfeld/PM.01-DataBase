@@ -1,3 +1,12 @@
+/*
+	Лофенфельд Георгий Владимирович
+	ПКС - 303
+	***
+	Вариант 30 - База Данных Митингов
+	***
+	Для чего модуль?
+*/
+
 #include "frontend.h"
 #include <wchar.h>
 
@@ -5,7 +14,7 @@
 
 void move_cursor_to(int x, int y) {
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD pos;
+	COORD pos = {};
 	pos.X = x;
 	pos.Y = y;
 	SetConsoleCursorPosition(hStdOut, pos);

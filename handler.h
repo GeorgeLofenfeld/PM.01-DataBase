@@ -1,3 +1,12 @@
+/*
+	Лофенфельд Георгий Владимирович
+	ПКС - 303
+	***
+	Вариант 30 - База Данных Митингов
+	***
+	Для чего модуль?
+*/
+
 #pragma once
 #include <string.h>
 #include <stdio.h>
@@ -50,7 +59,7 @@ public:
 private:
 	int date_or_time_handling = 1;// 1 if date
 	wchar_t* format(wchar_t* s); // получает строку и форматирует (прим. 26.10.22 или 14:25:00)
-	wchar_t f_s[128]; // format_string для хранения отформатированной строки
+	wchar_t f_s[128] = {}; // format_string для хранения отформатированной строки
 };
 
 class Bool_handler : public Key_handler // для обработки флага 
