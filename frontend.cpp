@@ -10,6 +10,7 @@
 #include "frontend.h"
 #include <wchar.h>
 
+#define FOREGROUND_TURQUOISE 11
 #define FOREGROUND_YELLOW 14
 
 void move_cursor_to(int x, int y) {
@@ -104,6 +105,8 @@ void Button::react(wchar_t key)
 {
 	/*
 	Функция реакции элемента Button на нажатие клавиши key
+	***
+	Принимает символ нажатой клавиши
 	*/
 	if (action != nullptr) // если ссылка не пуста
 		action(lt->get_frontend()); // вызываем action от Frontned'a которому принадлежит layout, которому принадлежит layout_object
@@ -180,6 +183,8 @@ void Table::react(wchar_t key)
 {
 	/*
 	Функция реакции элемента Table на нажатие клавиши key
+	***
+	Принимает символ нажатой клавиши
 	*/
 	if (key == 27) {
 		handlers[adding_counter]->clear();
@@ -370,6 +375,11 @@ void Table::print_row(int i)
 
 void Table::move_cursor_to_row_col(int row, int col)
 {
+	/*
+	Перемещает коретку на строку таблицы под номером row в столбец col
+	***
+	Принимает номер строки и столбца
+	*/
 	int cur_x = x;
 	for (int i = 0; i < col; i++)
 		cur_x += sizes[i];
@@ -381,20 +391,35 @@ void Table::move_cursor_to_row_col(int row, int col)
 
 void Table::print_adding_row(int a_y)
 {
+	/*
+	Выводит добавляемую строку
+	***
+	Принимает номер добавляемой строки
+	*/
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	
-	for (int i = 0; i < col_cnt-1; i++) {
-		if (i == adding_counter)
-			SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY);
-		move_cursor_to_row_col(a_y, i+1);
-		printf("%ls", adding_strings[i]);
-		if (i == adding_counter)
-			SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	for (int i = 0; i < col_cnt; i++) {
+		if (i == adding_counter + 1)
+			SetConsoleTextAttribute(hStdOut, BACKGROUND_WHITE);
+		else if (i == 0)
+			SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW);
+		move_cursor_to_row_col(a_y, i);
+		if (i != 0) {
+			printf("%ls", adding_strings[i - 1]);
+			for (int j = wcslen(adding_strings[i - 1]); j < sizes[i]-1; j++)
+				printf(" ");
+		}
+		else
+			printf(" %d", db->get_size()+1);
+		if (i == adding_counter + 1 || i == 0)
+			SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
 	}
 }
 
 void Table::print_error_message()
 {
+	/*
+	Выводит ошибку при обраотке вводимой строки (если таковая имеется)
+	*/
 	int cur_x = x;
 	for (int i = 0; i < col_cnt; i++)
 		cur_x += sizes[i];
@@ -406,14 +431,23 @@ void Table::print_error_message()
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
 
-void Table::clear_adding_strings() // очищение буфера добавляемой строки 
+void Table::clear_adding_strings() 
 {
+	/*
+	Очищение буфера добавляемой строки 
+	*/
 	for (int i = 0; i < 20; i++)
 		wcscpy(adding_strings[i], L"");
 }
 
 void Table::change_row(int delta)
 {
+	/*
+	Меняет выбранную строку таблицы. Строки зациклены (с последней на первую и с первой на последюю)
+	***
+	Принимает целочисленное значение delta,
+		насколько необходимо сдвинуться относительно текущей позиции
+	*/
 	int max_row_num = db->get_size();
 	if (max_row_num == 0) {
 		chosen_row = 0;
@@ -427,6 +461,9 @@ void Table::change_row(int delta)
 
 void Table::delete_chosen_row()
 {
+	/*
+	Удаление выбрнной строки
+	*/
 	if (db->get_size() > chosen_row) {
 		db->delete_record(chosen_row);
 		if (chosen_row >= db->get_size())
@@ -438,15 +475,21 @@ void Table::delete_chosen_row()
 
 Layout::Layout()
 {
-	available_keys[0] = 72; //KEY_UP 
-	available_keys[1] = 80; //KEY_DOWN 
-	available_keys[2] = 27; //ESC
-	available_keys[3] = 0;  //end of string for correct work
+	/*
+	Конструктор Layout
+	*/
+	available_keys[0] = 72; // KEY_UP 
+	available_keys[1] = 80; // KEY_DOWN 
+	available_keys[2] = 27; // ESC
+	available_keys[3] = 0;  // End of string for correct work
 }
 
 
 void Layout::set_screen()
 {
+	/*
+	Вывод всех видимых элементов Layout
+	*/
 	for (int i = 0; i < object_cnt; i++)
 		if (objects[i]->get_visible())
 			objects[i]->print();
@@ -455,6 +498,11 @@ void Layout::set_screen()
 
 wchar_t* Layout::get_available_keys()
 {
+	/*
+	Объединяет свои доступные клавиши со всеми доступными клавишами своих элементов (layout_object)
+	***
+	Возвращает массив доступных клавиш у текущего layout
+	*/
 	static wchar_t keys[1000]; // массив для доступных клавиш клавиатуры
 	wcscpy(keys, available_keys); // strcpy(x, y), available_keys - клавиши доступные для самого layout'a
 	if (chosen_index != -1) { // chose_index - индекс выбранного объекта
@@ -468,6 +516,11 @@ wchar_t* Layout::get_available_keys()
 
 void Layout::react(wchar_t key)
 {
+	/*
+	Реагирует на нажатую клавишу
+	***
+	Принимает символ нажатой клавиши
+	*/
 	if (chosen_index != -1 && wcschr(objects[chosen_index]->get_available_keys(), key)) // если объект выбран (индекс не равен -1) и нажатая клавиша доступна для выбранного объекта
 		objects[chosen_index]->react(key); // вызываем реакцию по данному объекту
 	else // если нажатая клавиша недоступна для данного объекта, то значит это либо доступная клавиша для самого layout, либо она доступна для background объекта (например перелистывание страниц в таблице)
@@ -495,6 +548,11 @@ void Layout::react(wchar_t key)
 
 void Layout::add_object(Layout_object* object)
 {
+	/*
+	Добавления элемента в layout
+	***
+	Принимает ссылку на добавляемый элемент
+	*/
 	objects[object_cnt] = object;
 	objects[object_cnt]->set_layout(this);
 	if (object->get_swichable() && chosen_index == -1) {

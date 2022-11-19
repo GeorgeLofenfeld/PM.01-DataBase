@@ -32,13 +32,14 @@ protected:
 class Int_char_handler : public Key_handler // обработка цифр и (или) букв в зависимости от параметров
 {
 public:
-	Int_char_handler(int maxlength, int int_ok, int char_ok);
+	Int_char_handler(int maxlength, int int_ok, int char_ok, int can_be_empty = 0);
 	~Int_char_handler() {};
 	void handle(wchar_t c); // обработка буквы
 private:
 	int int_ok = 1;
 	int char_ok = 1;
 	int maxlength = 100;
+	int can_be_empty = 0;
 };
 
 class Date_time_handler : public Key_handler // обрабатывает дату или время

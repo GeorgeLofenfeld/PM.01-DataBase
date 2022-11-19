@@ -10,14 +10,21 @@
 #include "handler.h"
 #include <wchar.h>
 
-Int_char_handler::Int_char_handler(int maxlength, int int_ok, int char_ok) // получаем первым аргументом макс. длинну строки. int_ok - если работаем с числом, char_ok - если с буквой (могут быть одновременно)
+Int_char_handler::Int_char_handler(int maxlength, int int_ok, int char_ok, int can_be_empty) 
 {
+	/*
+	Конструктор обработчика кнопок Int_char_handler
+	***
+	Получаем первым аргументом макс. длинну строки. int_ok - если работаем с числом, char_ok - если с буквой (могут быть одновременно), can_be_empty (по умолчанию 0),
+	если строка может быть пустая
+	*/
 	this->maxlength = maxlength; 
 	if (int_ok && !char_ok)
 		if (maxlength > 9)
 			this->maxlength = 9;
 	this->int_ok = int_ok;
 	this->char_ok = char_ok; 
+	this->can_be_empty = can_be_empty;
 }
 
 void Int_char_handler::handle(wchar_t c) // обработка полученного символа
@@ -35,7 +42,7 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 	}
 	else {
 		if (c == 13) {
-			if (wcslen(handled_string) > 0) { // enter 
+			if (wcslen(handled_string) > 0 || can_be_empty) { // enter 
 				is_finished = 1; // ввод окончен
 				wcscpy(error_string, L"");
 			}

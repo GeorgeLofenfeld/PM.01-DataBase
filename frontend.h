@@ -16,6 +16,7 @@
 #include "handler.h"
 
 #define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED) // определяем белый цвет
+#define BACKGROUND_WHITE (BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED)
 
 void move_cursor_to(int x, int y);
 

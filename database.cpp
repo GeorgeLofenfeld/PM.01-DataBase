@@ -74,9 +74,9 @@ Database_record** Database::get_data()
 }
 
 
-wchar_t* Database_record::to_line()
+wchar_t* Database_record::to_file_line()
 {
-	wchar_t** str = this->to_string();
+	wchar_t** str = this->to_string(1);
 	wcsncpy(line, L"", 2);
 	for (int i = 0; i < field_cnt; i++) {
 		wcsncat(line, str[i], 300);
@@ -87,7 +87,7 @@ wchar_t* Database_record::to_line()
 
 void Database_record::find_string(wchar_t* str)
 {
-	wchar_t* line = this->to_line();
+	wchar_t* line = this->to_file_line();
 	string_found = (wcsstr(line, str) != NULL);
 }
 
@@ -113,12 +113,15 @@ void Database_record::free_strings()
 	free(strings);
 }
 
-wchar_t** Database_meetings_record::to_string()
+wchar_t** Database_meetings_record::to_string(int is_file_format)
 {
 	swprintf(strings[0], 50, L"%02d.%02d.%02d", date.tm_mday, date.tm_mon, date.tm_year);
 	swprintf(strings[1], 50, L"%02d:%02d:%02d", date.tm_hour, date.tm_min, date.tm_sec);
 	swprintf(strings[2], 50, L"%d", declared_cnt);
-	swprintf(strings[3], 50, L"%d", real_cnt);
+	if (!is_file_format && real_cnt == -1)
+		wcscpy(strings[3], L"");
+	else
+		swprintf(strings[3], 50, L"%d", real_cnt);
 	wcscpy(strings[4], address);
 	wcscpy(strings[5], declarers);
 	if (permitted)
@@ -133,7 +136,10 @@ void Database_meetings_record::from_string(wchar_t str[20][128])
 	swscanf(str[0], L"%d.%d.%d", &date.tm_mday, &date.tm_mon, &date.tm_year);
 	swscanf(str[1], L"%d:%d:%d", &date.tm_hour, &date.tm_min, &date.tm_sec);
 	swscanf(str[2], L"%d", &declared_cnt);
-	swscanf(str[3], L"%d", &real_cnt);
+	if (wcslen(str[3]) > 0)
+		swscanf(str[3], L"%d", &real_cnt);
+	else
+		real_cnt = -1;
 	wcscpy(address, str[4]);
 	wcscpy(declarers, str[5]);
 	if (wcscmp(str[6], L"ÄÀ") == 0)
@@ -172,7 +178,7 @@ int Database_meetings_record::compare(Database_record* y, int index)
 	return 0;
 }
 
-wchar_t** Database_offences_record::to_string()
+wchar_t** Database_offences_record::to_string(int is_file_format)
 {
 	wcscpy(strings[0], meeting);
 	wcscpy(strings[1], offender_full_name);
@@ -197,7 +203,7 @@ void Database_offences_record::from_string(wchar_t str[20][128])
 		conviction_flag = 0;
 }
 
-wchar_t** Database_declarers_record::to_string()
+wchar_t** Database_declarers_record::to_string(int is_file_format)
 {
 	wcscpy(strings[0], full_name);
 	if (has_offenses_flag)

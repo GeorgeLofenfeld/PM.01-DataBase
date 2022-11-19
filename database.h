@@ -23,8 +23,8 @@ class Database_record // Виртуальный класс, описывающий абстрактный элемент базы
 {
 public:
 	virtual void from_string(wchar_t str[20][128]) = 0; // Виртуальная функция, которая в наследниках отвечает за перевод из набора строк в объект класса
-	virtual wchar_t** to_string() = 0; // Виртуальная функция, которая отвечает за перевод из объекта класса в набор строк 
-	wchar_t* to_line(); // Функция, которая отвечает за перевод в одну строку из объекта класса
+	virtual wchar_t** to_string(int is_file_format = 0) = 0; // Виртуальная функция, которая отвечает за перевод из объекта класса в набор строк 
+	wchar_t* to_file_line(); // Функция, которая отвечает за перевод в одну строку из объекта класса
 	Database_record() { malloc_strings(); }; // Конструктор 
 	~Database_record() { free_strings(); }; // Деструктор
 	int get_field_cnt() { return field_cnt; }; // Получение количества столбцов
@@ -46,7 +46,7 @@ class Database_meetings_record : public Database_record // Класс для элемента ба
 public:
 	Database_meetings_record() { field_cnt = 7; }; // Указываем, что в данной таблице 7 полей
 	~Database_meetings_record() {};
-	wchar_t** to_string();
+	wchar_t** to_string(int is_file_format = 0);
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index);
 private:
@@ -63,7 +63,7 @@ class Database_offences_record : public Database_record
 public:
 	Database_offences_record() { field_cnt = 5; };
 	~Database_offences_record() {};
-	wchar_t** to_string();
+	wchar_t** to_string(int is_file_format = 0);
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index) { return 0; };
 private:
@@ -81,7 +81,7 @@ class Database_declarers_record : public Database_record
 public:
 	Database_declarers_record() { field_cnt = 2; };
 	~Database_declarers_record() {};
-	wchar_t** to_string();
+	wchar_t** to_string(int is_file_format = 0);
 	void from_string(wchar_t str[20][128]);
 	int compare(Database_record* y, int index);
 private:

@@ -120,7 +120,7 @@ int Base_operator::save()
 			int base_size = dbs[i]->get_size();
 			fprintf(out, "%s %d\n", bt_to_str(dbs[i]->get_type()), base_size);
 			for (int j = 0; j < base_size; j++) {
-				fprintf(out, "%ls\n", dbs[i]->get_record(j)->to_line());
+				fprintf(out, "%ls\n", dbs[i]->get_record(j)->to_file_line());
 			}
 		}
 		fclose(out);
