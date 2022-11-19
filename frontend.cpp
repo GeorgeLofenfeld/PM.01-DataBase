@@ -13,6 +13,11 @@
 #define FOREGROUND_YELLOW 14
 
 void move_cursor_to(int x, int y) {
+	/*
+	Перемещает каретку консоли в точку с координатами (x;y)
+	***
+	Принимает целочисленные координаты x и y
+	*/
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD pos = {};
 	pos.X = x;
@@ -21,21 +26,37 @@ void move_cursor_to(int x, int y) {
 }
 
 int min_number(int a, int b) {
+	/*
+	Находит минимум двух чисел
+	***
+	Принимает целочисленные значения a и b
+	***
+	Возвращает минимальное из входных значений
+	*/
 	return a <= b ? a : b;
 }
 
-Text::Text(int x, int y, wchar_t t[], int color)
+Text::Text(int x, int y, wchar_t caption[], int color)
 {
+	/*
+	Конструктор элемента Text
+	***
+	Принимает целочисленные координаты текста в Layout x и y, 
+		название объекта caption и цвет текста(по умолчанию белый) 
+	*/
 	this->x = x;
 	this->y = y;
 	this->text_color = color;
-	wcscpy(caption, t); // текст текста 
+	wcscpy(this->caption, caption); // текст текста 
 	is_swichable = 0; // текст никогда нельзя выбрать
 }
 
 
 void Text::print() 
 {
+	/*
+	Функция вывода элемента Text на экран
+	*/
 	move_cursor_to(x, y);
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательная переменная для смены фона 
 	SetConsoleTextAttribute(hStdOut, text_color | FOREGROUND_INTENSITY);
@@ -46,6 +67,12 @@ void Text::print()
 
 Button::Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd))
 {
+	/*
+	Конструктор элемента Button
+	***
+	Принимает целочисленные координаты кнопки в Layout x и y,
+		название объекта caption и ссылку на функцию action, вызываемую при нажатии кнопки(по умолчанию NULL)
+	*/
 	this->x = x;
 	this->y = y;
 	this->action = action;
@@ -58,6 +85,9 @@ Button::Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd))
 
 void Button::print()
 {
+	/*
+	Функция вывода элемента Button на экран
+	*/
 	move_cursor_to(x, y); // перемещаем курсор на данную координату
 	if (swiched) { // если выбран
 		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательная переменная для смены фона 
@@ -72,12 +102,23 @@ void Button::print()
 
 void Button::react(wchar_t key)
 {
+	/*
+	Функция реакции элемента Button на нажатие клавиши key
+	*/
 	if (action != nullptr) // если ссылка не пуста
 		action(lt->get_frontend()); // вызываем action от Frontned'a которому принадлежит layout, которому принадлежит layout_object
 }
 
 Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database* db)
 {
+	/*
+	Конструктор элемента Table
+	***
+	Принимает целочисленные координаты таблицы в Layout x и y,
+		количество единовременно выводимых строк row_cnt, количество столбцов col_cnt(максимум 20),
+		название объекта caption, массив названий столбцов names, массив размеров столбцов sizes,
+		ссылку на отображаемую базу данных db
+	*/
 	this->x = x;
 	this->y = y;
 	this->row_cnt = row_cnt;
@@ -96,6 +137,9 @@ Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t 
 
 void Table::print()
 {
+	/*
+	Функция вывода элемента Table на экран
+	*/
 	int cur_x = x;
 	int vertical_shifts[3] = {0,3,row_cnt + 3 + 1};
 	for (int i = 0; i < col_cnt; i++) {
@@ -134,6 +178,9 @@ void Table::print()
 
 void Table::react(wchar_t key)
 {
+	/*
+	Функция реакции элемента Table на нажатие клавиши key
+	*/
 	if (key == 27) {
 		handlers[adding_counter]->clear();
 		adding_counter = 0;
@@ -219,6 +266,12 @@ void Table::react(wchar_t key)
 }
 
 void generate_available_letters(wchar_t** s) {
+	/*
+	Заполяет входную строку всеми буквами английского и русского алфавитов, 
+		цифрами, спец. символами, кнопками Enter и Backspace
+	***
+	Принимает ссылку на массив символов s
+	*/
 	(*s)[0] = 13;
 	(*s)[1] = 8;
 	(*s)[2] = L' ';
@@ -232,6 +285,11 @@ void generate_available_letters(wchar_t** s) {
 
 void Table::change_state(Table_states state)
 {
+	/*
+	Меняет состояние таблицы на новое(state). Вместе с состоянием меняются доступные клавиши
+	***
+	Принимает одно из значений enum Table_states
+	*/
 	this->state = state; 
 	if (state == neutral) {
 		available_keys[0] = 75;
@@ -270,6 +328,12 @@ void Table::change_state(Table_states state)
 
 void Table::change_page(int delta)
 {
+	/*
+	Меняет отображаемую страницу таблицы. Страницы зациклены
+	***
+	Принимает целочисленное значение delta, 
+		насколько необходимо сдвинуться относительно текущей страницы
+	*/
 	int max_page_num = db->get_size() / row_cnt + 1; 
 	page_num = (page_num + delta) % max_page_num;
 	if (page_num < 0)
@@ -281,6 +345,11 @@ void Table::change_page(int delta)
 
 void Table::print_row(int i)
 {
+	/*
+	Выводит строку таблицы под номером i
+	***
+	Принимает целочисленное значение i
+	*/
 	Database_record *rec = db->get_record(i);
 	wchar_t** strings = rec->to_string();
 	int cur_x = x;

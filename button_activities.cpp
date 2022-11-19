@@ -8,10 +8,7 @@
 */
 
 #pragma once 
-#include "layouts.h"
-
-#define FOREGROUND_YELLOW 14
-#define FOREGROUND_TURQUOISE 11
+#include "button_activities.h"
 
 void meeting_main(Frontend* fd) {
     /*
@@ -99,7 +96,7 @@ void go_meeting(Frontend* fd) {
     /*
     Переход на другой layout
     ***
-    ринимает ссылку на Frontend (отвечает за отображение и взаимодействие)
+    Принимает ссылку на Frontend (отвечает за отображение и взаимодействие)
     */
     fd->change_layout(1);
     meeting_main(fd);

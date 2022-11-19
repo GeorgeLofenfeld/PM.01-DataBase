@@ -89,7 +89,7 @@ private:
 class Text : public Layout_object
 {
 public:
-	Text(int x, int y, wchar_t t[], int color = FOREGROUND_WHITE);
+	Text(int x, int y, wchar_t caption[], int color = FOREGROUND_WHITE);
 	~Text() {};
 	void print();
 	void react(wchar_t key) {};
