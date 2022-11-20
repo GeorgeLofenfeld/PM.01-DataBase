@@ -10,12 +10,20 @@
 #include "database.h"
 
 void mem_check_err() {
+	/*
+	Вывод ошибки и завершение программы, используется при ошибке выделении памяти
+	*/
 	printf("Ошибка выделения памяти");
 	_Exit(EXIT_FAILURE);
 }
 
 Database::Database(int cnt)
 {
+	/*
+	Конструктор класса Database
+	***
+	Принимает начальный размер базы данных 
+	*/
 	this->cnt = cnt;
 	list_size = cnt > 5 ? (cnt + cnt / 2) : 10;
 	base = (Database_record**)malloc(list_size * sizeof(Database_record*));
@@ -27,11 +35,19 @@ Database::Database(int cnt)
 
 Database::~Database()
 {
+	/*
+	Деструктор класса Database, очищение памяти
+	*/
 	free(base);
 }
 
 void Database::delete_record(int i)
 {
+	/*
+	Удаление ссылки на запись из базы данных по индексу
+	***
+	Принимает индекс записи
+	*/
 	Database_record* deleted = base[i];
 	for (int j = i; j < cnt - 1; j++)
 		base[j] = base[j + 1]; //memory will be free in Base_operator
@@ -40,17 +56,33 @@ void Database::delete_record(int i)
 
 void Database::change_record(int i, wchar_t str[20][128])
 {
+	/*
+	Изменение записи по индексу 
+	***
+	Принимаем индекс изменяемой записи таблицы и строковое представление новых полей записи
+	*/
 	base[i]->from_string(str);
 }
 
 void Database::search(wchar_t* str)
 {
+	/*
+	Реализация функции поиска с помощью быстрой сортировки,
+	таблица сортируется по принципу схожести с искомой подстрокой
+	***
+	Принимает искомую подстроку
+	*/
 	for (int i = 0; i < cnt; i++)
 		base[i]->find_string(str);
 	quickSort(&base, -1, 0, cnt - 1);
 }
 
 void Database::add_record(Database_record* rec) {
+	/*
+	Добавление ссылки на запись в базу данных 
+	***
+	Принимает ссылку на запись
+	*/
 	base[cnt] = rec;
 	cnt += 1;
 	if (cnt == list_size - 1) {
@@ -65,17 +97,32 @@ void Database::add_record(Database_record* rec) {
 
 void Database::add_record(wchar_t str[20][128])
 {
+	/*
+	Добавление записи в виде строкового представления.
+	Для строкового представления создаётся запись в оперативной памяти внутри base_operator (bop)
+	и в базу данных добавляется ссылка на данную запись
+	***
+	Принимает массив строк
+	*/
 	this->add_record(bop->add(str, this->type));
 }
 
 Database_record** Database::get_data()
 {
+	/*
+	Возвращает массив ссылок на записи
+	*/
 	return base;
 }
 
 
 wchar_t* Database_record::to_file_line()
 {
+	/*
+	Перевод записи в одну строку соответствующую формату записи файла
+	***
+	Возвращает сгенерированную строку
+	*/
 	wchar_t** str = this->to_string(1);
 	wcsncpy(line, L"", 2);
 	for (int i = 0; i < field_cnt; i++) {
@@ -87,13 +134,20 @@ wchar_t* Database_record::to_file_line()
 
 void Database_record::find_string(wchar_t* str)
 {
+	/*
+	Поиск подстроки в записи
+	***
+	Принимает подстроку
+	*/
 	wchar_t* line = this->to_file_line();
 	string_found = (wcsstr(line, str) != NULL);
 }
 
 void Database_record::malloc_strings()
 {
-
+	/*
+	Выделение памяти под буфер для строкового представления записи database_record'a
+	*/
 	strings = (wchar_t**)malloc(20 * sizeof(wchar_t*));
 	if (strings == NULL) {
 		mem_check_err();
@@ -108,6 +162,9 @@ void Database_record::malloc_strings()
 
 void Database_record::free_strings()
 {
+	/*
+	Освобождение памяти от буфера строкового представления записи database_record'a
+	*/
 	for (int i = 0; i < 20; i++)
 		free(strings[i]);
 	free(strings);
@@ -115,6 +172,7 @@ void Database_record::free_strings()
 
 wchar_t** Database_meetings_record::to_string(int is_file_format)
 {
+	// Перевод в массив строк
 	swprintf(strings[0], 50, L"%02d.%02d.%02d", date.tm_mday, date.tm_mon, date.tm_year);
 	swprintf(strings[1], 50, L"%02d:%02d:%02d", date.tm_hour, date.tm_min, date.tm_sec);
 	swprintf(strings[2], 50, L"%d", declared_cnt);
@@ -133,6 +191,7 @@ wchar_t** Database_meetings_record::to_string(int is_file_format)
 
 void Database_meetings_record::from_string(wchar_t str[20][128])
 {
+	// Перевод из массива строк
 	swscanf(str[0], L"%d.%d.%d", &date.tm_mday, &date.tm_mon, &date.tm_year);
 	swscanf(str[1], L"%d:%d:%d", &date.tm_hour, &date.tm_min, &date.tm_sec);
 	swscanf(str[2], L"%d", &declared_cnt);
@@ -150,6 +209,7 @@ void Database_meetings_record::from_string(wchar_t str[20][128])
 
 int Database_meetings_record::compare(Database_record* y, int index)
 {
+	// Сравнение текущей записи с записью y по полю под индексом index
 	Database_meetings_record* y_m = (Database_meetings_record*)y;
 	struct tm d1 = this->date;
 	struct tm d2 = y_m->date;
@@ -230,6 +290,7 @@ int Database_declarers_record::compare(Database_record* y, int index)
 }
 
 void swap_record(Database_record** a, Database_record** b) {
+	// Меняет значениями 
 	Database_record* t = *a;
 	*a = *b;
 	*b = t;

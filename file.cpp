@@ -15,6 +15,11 @@
 
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {
+	/*
+	 онструктор класса Base_operator
+	***
+	ѕринимает путь к файлу path, массив ссылок на базы данных dbs, размер массива base_cnt, типы баз данных в виде массива base_types
+	*/
 	this->dbs = dbs;
 	this->base_cnt = base_cnt;
 	this->base_types = base_types;
@@ -46,6 +51,15 @@ Base_operator::~Base_operator() {
 };
 
 base_type str_to_bt(char* str) {
+	/*
+	ѕереводит строку в тип данных base_type, 
+	если строка не совпадает ни с одним из типов base_type, 
+	то возвращает специальный тип error
+	***
+	ѕринимает строку str (хранит тип таблицы)
+	***
+	¬озвращает тип базы данных в виде base_type
+	*/
 	char strs[3][10] = { "meetings", "declarers", "offences" };
 	base_type bts[4] = { meetings, declarers, offences, error };
 	for (int i = 0; i < 3; i++)
@@ -54,6 +68,13 @@ base_type str_to_bt(char* str) {
 	return bts[3];
 }
 char* bt_to_str(base_type bt) {
+	/*
+	ѕереводит тип базы данных base_type в строку, необходимо дл€ записи в файл
+	***
+	ѕринимает тип базы данных bt  
+	***
+	¬озвращает строку
+	*/
 	static char strs[3][10] = { "meetings", "declarers", "offences" };
 	base_type bts[3] = { meetings, declarers, offences};
 	for (int i = 0; i < 3; i++)
@@ -63,6 +84,13 @@ char* bt_to_str(base_type bt) {
 
 void Base_operator::initializate()
 {
+	/*
+	ѕодготовка баз данных прив€занных к base_operator в конструкторе, 
+	если файл в котором сохранены базы данных существует, 
+	то происходит загрузка информации баз данных из него,
+	иначе создаЄтс€ новый файл, и в него записываетс€
+	информаци€ о пустых базах данных
+	*/
 	FILE* in;
 	char base_type_str[10] = "";
 	int base_size = 0;
@@ -114,6 +142,11 @@ void Base_operator::initializate()
 
 int Base_operator::save()
 {
+	/*
+	—охранение всех баз данных в файл
+	***
+	¬озвращает единицу если сохранение успешно
+	*/
 	FILE *out = fopen(path, "w");
 	if (out) {
 		for (int i = 0; i < base_cnt; i++) {
@@ -131,7 +164,11 @@ int Base_operator::save()
 
 void Base_operator::realloc_array(base_type bt, int cnt)
 {
-
+	/*
+	ƒинамическое перевыделение оперативной пам€ти баз данных при достижении их предельного размера
+	***
+	ѕринимает тип базы данных и новый размер базы данных
+	*/
 	switch (bt)
 	{
 	case base_type::meetings:
@@ -167,25 +204,39 @@ void Base_operator::realloc_array(base_type bt, int cnt)
 }
 
 Database_record* Base_operator::read(FILE* in, base_type bt) {
+	/*
+	—читывание одной строки базы данных из файла
+	***
+	ѕринимает ссылку на файл и тип базы данных
+	***
+	¬озвращает ссылку на преобразованную из строки запись базы данных
+	*/
 	Database_record* answer = NULL;
 	wchar_t line[2560] = {};
 	wchar_t words[20][128] = {};
 	wchar_t delim[] = L"|";
 	fgetws(line, 2560, in);
 	wchar_t* rowstate = 0;
-	line[wcslen(line) - 1] = 0;// remove \n
+	line[wcslen(line) - 1] = 0;// ”дал€ем \n
 	wchar_t* ptr = wcstok_s(line, delim,&rowstate);
 	int cnt = 0;
 	while (ptr != NULL)
 	{	
 		wcsncpy(words[cnt], ptr, 128); //  опируем строку до ближайшего разделител€ ( | )
-		ptr = wcstok_s(NULL, delim, &rowstate); // передвигаем указатель на следующий разделитель
+		ptr = wcstok_s(NULL, delim, &rowstate); // ѕередвигаем указатель на следующий разделитель
 		cnt++;
 	}
 	return this->add(words, bt);
 }
 
 Database_record* Base_operator::add(wchar_t words[20][128], base_type bt) {
+	/*
+	—охранение новой записи в оперативной пам€ти
+	***
+	ѕринимает массив строк (строковое представление записи) и тип базы данных 
+	***
+	¬озвращает указатель на сохранЄнную запись
+	*/
 	Database_record* answer = NULL;
 	switch (bt)
 	{

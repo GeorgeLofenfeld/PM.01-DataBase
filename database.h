@@ -23,7 +23,7 @@ class Database_record // Виртуальный класс, описывающий абстрактный элемент базы
 {
 public:
 	virtual void from_string(wchar_t str[20][128]) = 0; // Виртуальная функция, которая в наследниках отвечает за перевод из набора строк в объект класса
-	virtual wchar_t** to_string(int is_file_format = 0) = 0; // Виртуальная функция, которая отвечает за перевод из объекта класса в набор строк 
+	virtual wchar_t** to_string(int is_file_format = 0) = 0; // Виртуальная функция, которая отвечает за перевод из объекта класса в набор строк (в самой таблице)
 	wchar_t* to_file_line(); // Функция, которая отвечает за перевод в одну строку из объекта класса
 	Database_record() { malloc_strings(); }; // Конструктор 
 	~Database_record() { free_strings(); }; // Деструктор
@@ -47,7 +47,7 @@ public:
 	Database_meetings_record() { field_cnt = 7; }; // Указываем, что в данной таблице 7 полей
 	~Database_meetings_record() {};
 	wchar_t** to_string(int is_file_format = 0);
-	void from_string(wchar_t str[20][128]);
+	void from_string(wchar_t str[20][128]); // Передаем то, что хотим записать в данную запись
 	int compare(Database_record* y, int index);
 private:
 	struct tm date = {}; // Встроенная структура для даты и времени

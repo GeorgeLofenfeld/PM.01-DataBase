@@ -244,13 +244,13 @@ void Table::react(wchar_t key)
 	else if (state == deleting || state == choosing_for_changing) {
 		switch (key)
 		{
-		case 75://left
+		case 75: // Влево
 			change_page(-1);
 			break;
-		case 77://right
+		case 77: // Вправо
 			change_page(1);
 			break;
-		case 72:
+		case 72: // 
 			change_row(-1);
 			break;
 		case 80:
@@ -549,9 +549,9 @@ void Layout::react(wchar_t key)
 void Layout::add_object(Layout_object* object)
 {
 	/*
-	Добавления элемента в layout
+	Добавление элемента в layout
 	***
-	Принимает ссылку на добавляемый элемент
+	Принимает ссылку на добавляемые элементы
 	*/
 	objects[object_cnt] = object;
 	objects[object_cnt]->set_layout(this);
@@ -564,21 +564,35 @@ void Layout::add_object(Layout_object* object)
 
 void Layout::add_object(Layout_object** objects, int cnt)
 {
+	/*
+	Добавление массива элементов в layout размера cnt 
+	***
+	Принимает массив ссылок на добавляемые элементы layout количества cnt
+	*/
 	for (int i = 0; i < cnt; i++)
 		add_object(objects[i]);
 }
 
 Layout_object* Layout::get_object_by_caption(wchar_t caption[])
 {
+	/*
+	Ищем объект с совпадающим названием и возвращаем ссылку на него
+	***
+	Принимаем строку с названием
+	*/
 	for (int i = 0; i < object_cnt; i++)
 		if (wcscmp(objects[i]->get_caption(), caption) == 0)
 			return objects[i];
-	return nullptr;
+	return NULL;
 }
 
-void Layout::change_swichable_object(int delta)//смещение вверх или вниз по списку
+void Layout::change_swichable_object(int delta)
 {
-	//delta must be 1 or -1
+	/*
+	Смена выбранного объекта на layout 
+	***
+	Принимает целочисленное значение delta - насколько нужно сдвинуться относительно текущей позиции
+	*/
 	if (chosen_index != -1) {
 		objects[chosen_index]->set_switched(0);
 		do
@@ -593,6 +607,11 @@ void Layout::change_swichable_object(int delta)//смещение вверх или вниз по спис
 
 void Layout::change_swichable_object(Layout_object* object)
 {
+	/*
+	Смена выбранного объекта на layout
+	***
+	Принимает ссылку на новый выбранный объект
+	*/
 	if (chosen_index != -1) {
 		objects[chosen_index]->set_switched(0);
 	}
@@ -608,6 +627,13 @@ void Layout::change_swichable_object(Layout_object* object)
 
 wchar_t Key_reader::read(wchar_t* keys)
 {
+	/*
+	Считывает нажатую клавишу
+	***
+	Принимает массив допустимых клавиш и сравнивает с нажатой до тех пор, пока нажатая клавиша не окажется доступной
+	***
+	Возвращает нажатую клавишу
+	*/
 	wchar_t key;
 	do
 	{
@@ -618,26 +644,43 @@ wchar_t Key_reader::read(wchar_t* keys)
 
 Frontend::Frontend()
 {
-	reader = Key_reader();
+	/*
+	Конструктор класса Frontend 
+	*/
+	reader = Key_reader(); // Создаем новый объект класса Key_reader при иницилизации класса Frontend
 }
 
-void Frontend::set_layout(Layout *in, int index) // добавления в текущий frontend нового layout по индексу
+void Frontend::set_layout(Layout *in, int index) 
 {
+	/*
+	Добавление в текущий frontend нового layout по индексу
+	***
+	Принимает ссылку на layout и его индекс
+	*/
 	layouts[index] = in;
 	layouts[index]->set_frontend(this); // передаём в добавленый layout ссылку на объект класса frontend, который вызвал set_layout. Теперь он может с ним взаимодействовать
 }
 
 void Frontend::stop() {
+	/*
+	Завершение работы frontend
+	*/
 	exit = 1; // выход из цикла внутри Frontend::run, завершается программа, т.к. цикл внутри метода run завершён (сам  цикл отвечает за работу программы) 
 }
 
 void Frontend::wait()
 {
+	/*
+	Задерживает обновление консоли на один цикл метода Frontend::run. Необходимо для зависания сообщения об успешном сохранении
+	*/
 	waiting = 1;
 }
 
 void Frontend::clear_screen()
 {
+	/*
+	Очищение вывода консолис (необходимо для обновления вывода консоли)
+	*/
 	if (waiting)
 		waiting = 0;
 	else
@@ -645,6 +688,9 @@ void Frontend::clear_screen()
 }
 
 void Frontend::run() {
+	/*
+	Основной метод класса Frontend, отвечает за основную работу программы (смена отображения, доступные клавиши, взаимодействие, обновление консоли и т.д.)
+	*/
 	while (!exit) { // exit - переменная frontend, пока не выбрана 
 		layouts[current_layout_idx]->set_screen(); // отрисовывает текущую вёрстку на экран
 		wchar_t* keys = layouts[current_layout_idx]->get_available_keys(); // получаем массив доступных кнопок
@@ -655,6 +701,11 @@ void Frontend::run() {
 
 void Frontend::change_layout(int index)
 {
+	/*
+	Смена текущего layout c сохранением его индекса 
+	***
+	Принимает индекс следующего layout
+	*/
 	int prev = current_layout_idx;
 	current_layout_idx = index;
 	layouts[current_layout_idx]->set_prev_layout(prev);
@@ -662,14 +713,20 @@ void Frontend::change_layout(int index)
 
 void Frontend::leave()
 {
+	/*
+	Переход на предыдущий layout
+	*/
 	current_layout_idx = layouts[current_layout_idx]->get_prev_layout(); // При переходе в новый layout мы запомнили предыдущий. Возвращаемся к нему
 }
 
 void Layout_object::deactivate()
 {
+	/*
+	Скрывает элемент, если элемент был выбран, то выбирает другой элемент из активных (деактивированные элементы невидимы и с ними нельзя взаимодействовать)
+	*/
 	if (!deactivated) { // если не деактивировано
 		save_state(); // сохраняем состояние
-		if (swiched) // если выбрано ( != 0 )
+		if (swiched) // если выбрано
 			lt->change_swichable_object(1); // выбираем другой объект данного layout'a, с которым можно взаимодействвать (не текст)
 		is_swichable = 0, visible = 0; 
 		deactivated = 1;
