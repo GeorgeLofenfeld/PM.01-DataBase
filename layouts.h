@@ -7,11 +7,10 @@
     Модуль в котором конструируются элементы для отображения и объявляются функции привязанных к кнопкам 
 */
 
-#pragma once 
-#include "frontend.h"
-#include "button_activities.h"
-#define FOREGROUND_YELLOW 14
-#define FOREGROUND_TURQUOISE 11
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include "frontend.h" // Подключение заголовочного модуля frontend.h
+#include "button_activities.h" // Подключение заголовочного модуля button_activities.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 
 Layout* create_menu_layout() {
@@ -49,8 +48,12 @@ Layout* create_meetings_layout(Database *db) {
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Разрешению", L"Назад",
         L"ДАТА", L"ВРЕМЯ", L"КОЛ. ЗАЯВ. УЧАСТН.", L"КОЛ. ФАКТ. УЧАСТН.",
-        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / разрешённости", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы\n\nФОРМАТ ВВОДА ДАТЫ: ДД.ММ.ГГ\nФОРМАТ ВВОДА ВРЕМЕНИ: ЧЧ:ММ:СС", L"(c) 2022 Created by George L.", L"Адресу", L"ФИО Заявителя"};
-    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[21], FOREGROUND_TURQUOISE), Text(0, 40, names[22], FOREGROUND_TURQUOISE), Text(0, 41, names[23], FOREGROUND_TURQUOISE), Text(0, 42, names[24], FOREGROUND_TURQUOISE), Text(0, 47, names[25], FOREGROUND_YELLOW) };
+        L"АДРЕС", L"ФИО ЗАЯВИТЕЛЯ", L"РАЗРЕШЕНИЕ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / разрешённости", 
+        L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", 
+        L"ESC: Выход в главное меню / выход из режима таблицы\n\nФОРМАТ ВВОДА ДАТЫ: ДД.ММ.ГГ\nФОРМАТ ВВОДА ВРЕМЕНИ: ЧЧ:ММ:СС", L"(c) 2022 Created by George L.", 
+        L"Адресу", L"ФИО Заявителя"};
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[21], FOREGROUND_TURQUOISE), Text(0, 40, names[22], FOREGROUND_TURQUOISE), 
+        Text(0, 41, names[23], FOREGROUND_TURQUOISE), Text(0, 42, names[24], FOREGROUND_TURQUOISE), Text(0, 47, names[25], FOREGROUND_YELLOW) };
     static Button buttons[13] = {
         Button(25, 3, names[2],meeting_showing),
         Button(38, 3, names[3], add_to_meetings_table),
@@ -98,8 +101,12 @@ Layout* create_declarers_layout(Database* db) {
     static Layout declarers = Layout();
     wchar_t names[18][128] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:", 
-    L"ФИО", L"Нарушениям", L"Назад", L"ФИО ЗАЯВИТЕЛЯ", L"НАЛИЧИЕ НАРУШЕНИЙ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / правонарушений", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", L"(c) 2022 Created by George L." };
-    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[13], FOREGROUND_TURQUOISE), Text(0, 40, names[14], FOREGROUND_TURQUOISE), Text(0, 41, names[15], FOREGROUND_TURQUOISE), Text(0, 42, names[16], FOREGROUND_TURQUOISE), Text(0, 47, names[17], FOREGROUND_YELLOW) };
+    L"ФИО", L"Нарушениям", L"Назад", L"ФИО ЗАЯВИТЕЛЯ", L"НАЛИЧИЕ НАРУШЕНИЙ", 
+        L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / правонарушений", L"ВЛЕВО / ВПРАВО: Переключение страницы", 
+        L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", 
+        L"(c) 2022 Created by George L." };
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[13], FOREGROUND_TURQUOISE), Text(0, 40, names[14], FOREGROUND_TURQUOISE), 
+        Text(0, 41, names[15], FOREGROUND_TURQUOISE), Text(0, 42, names[16], FOREGROUND_TURQUOISE), Text(0, 47, names[17], FOREGROUND_YELLOW) };
     static Button buttons[8] = {
         Button(25, 3, names[2], declarers_showing),
         Button(38, 3, names[3], add_to_declarers_table),
@@ -141,8 +148,12 @@ Layout* create_offences_layout(Database* db) {
     wchar_t names[24][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
     L"Митингам", L"ФИО Нарушителя",  L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом",
-    L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ", L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / осуждения судом", L"ВЛЕВО / ВПРАВО: Переключение страницы", L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", L"(c) 2022 Created by George L." };
-    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[19], FOREGROUND_TURQUOISE), Text(0, 40, names[20], FOREGROUND_TURQUOISE), Text(0, 41, names[21], FOREGROUND_TURQUOISE), Text(0, 42, names[22], FOREGROUND_TURQUOISE), Text(0, 47, names[23], FOREGROUND_YELLOW) }; // статик текст
+    L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ", 
+        L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / осуждения судом", L"ВЛЕВО / ВПРАВО: Переключение страницы", 
+        L"ENTER: Выбор режима таблицы / сортировки / подтверждение ввода / подтверждение поискового запроса", L"ESC: Выход в главное меню / выход из режима таблицы", 
+        L"(c) 2022 Created by George L." };
+    static Text texts[7] = { Text(5, 3, names[1]), Text(5, 3, names[7]), Text(0, 39, names[19], FOREGROUND_TURQUOISE), Text(0, 40, names[20], FOREGROUND_TURQUOISE), 
+        Text(0, 41, names[21], FOREGROUND_TURQUOISE), Text(0, 42, names[22], FOREGROUND_TURQUOISE), Text(0, 47, names[23], FOREGROUND_YELLOW) }; // статик текст
     static Button buttons[11] = {
         Button(25, 3, names[2], offences_showing),
         Button(38, 3, names[3], add_to_offences_table),

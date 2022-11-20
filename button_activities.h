@@ -7,8 +7,8 @@
     Объявления функций реализованных в модуле button_activities.cpp
 */
 
-#pragma once
-#include "frontend.h"
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include "frontend.h" // Подключение заголовочного модуля frontend.h
 
 void meeting_main(Frontend* fd); // Переключается между отображаемыми наборами кнопок
 

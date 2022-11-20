@@ -7,11 +7,9 @@
 	Реализация функций из frontend.h
 */
 
-#include "frontend.h"
-#include <wchar.h>
-
-#define FOREGROUND_TURQUOISE 11
-#define FOREGROUND_YELLOW 14
+#include <wchar.h> // Wide char - широкий символ - работа с алфавитами
+#include "frontend.h" // Подключение заголовочного модуля frontend.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 void move_cursor_to(int x, int y) {
 	/*
@@ -60,9 +58,9 @@ void Text::print()
 	*/
 	move_cursor_to(x, y);
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательная переменная для смены фона 
-	SetConsoleTextAttribute(hStdOut, text_color | FOREGROUND_INTENSITY);
+	SetConsoleTextAttribute(hStdOut, text_color);
 	printf("%ls", caption); // wchar* (long string), выводим название 
-	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE);
 }
 
 
@@ -79,7 +77,7 @@ Button::Button(int x, int y, wchar_t t[], void (*action)(Frontend* fd))
 	this->action = action;
 	wcscpy(caption, t); // сохранили название (текст кнопки)
 	this->set_switchable(1); // данный объект может быть выбран
-	available_keys[0] = 13; // код enter 
+	available_keys[0] = KEY_ENTER; 
 	available_keys[1] = 0;// для корректной работы string.h (нуль-терминированная строка)
 }
 
@@ -92,9 +90,9 @@ void Button::print()
 	move_cursor_to(x, y); // перемещаем курсор на данную координату
 	if (swiched) { // если выбран
 		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); // вспомогательная переменная для смены фона 
-		SetConsoleTextAttribute(hStdOut, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY); // смена фона надписи на белый 
+		SetConsoleTextAttribute(hStdOut, BACKGROUND_WHITE); // смена фона надписи на белый 
 		printf("%ls", caption); // wchar*, выводим название 
-		SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); // смена фона надписи на черный 
+		SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE); 
 	}
 	else
 		printf("%ls", caption); // иначе если не выбран, то без смены фона
@@ -186,7 +184,7 @@ void Table::react(wchar_t key)
 	***
 	Принимает символ нажатой клавиши
 	*/
-	if (key == 27) {
+	if (key == KEY_ESC) {
 		handlers[adding_counter]->clear();
 		adding_counter = 0;
 		clear_adding_strings();
@@ -231,10 +229,10 @@ void Table::react(wchar_t key)
 	else if (state == neutral){
 		switch (key)
 		{
-		case 75://left
+		case KEY_LEFT: 
 			change_page(-1);
 			break;
-		case 77://right
+		case KEY_RIGHT:
 			change_page(1);
 			break;
 		default:
@@ -244,19 +242,19 @@ void Table::react(wchar_t key)
 	else if (state == deleting || state == choosing_for_changing) {
 		switch (key)
 		{
-		case 75: // Влево
+		case KEY_LEFT: 
 			change_page(-1);
 			break;
-		case 77: // Вправо
+		case KEY_RIGHT:
 			change_page(1);
 			break;
-		case 72: // 
+		case KEY_UP: 
 			change_row(-1);
 			break;
-		case 80:
+		case KEY_DOWN:
 			change_row(1);
 			break;
-		case 13:
+		case KEY_ENTER:
 			if (state == deleting)
 				delete_chosen_row();
 			else if (db->get_size() > 0)
@@ -277,8 +275,8 @@ void generate_available_letters(wchar_t** s) {
 	***
 	Принимает ссылку на массив символов s
 	*/
-	(*s)[0] = 13;
-	(*s)[1] = 8;
+	(*s)[0] = KEY_ENTER;
+	(*s)[1] = KEY_BACKSPACE;
 	(*s)[2] = L' ';
 	for (wchar_t i = L','; i <= L'z'; i++)// , - . / 0 1 2 ... z
 		(*s)[i - L',' + 3] = i;
@@ -297,19 +295,19 @@ void Table::change_state(Table_states state)
 	*/
 	this->state = state; 
 	if (state == neutral) {
-		available_keys[0] = 75;
-		available_keys[1] = 77;
+		available_keys[0] = KEY_LEFT;
+		available_keys[1] = KEY_RIGHT;
 		available_keys[2] = 0;
 		show_chosen_row = 0;
 	} else if (state == deleting || state == choosing_for_changing) {
 		chosen_row = page_num * row_cnt;
 		show_chosen_row = 1;
-		available_keys[0] = 75;
-		available_keys[1] = 77;
-		available_keys[2] = 13;
-		available_keys[3] = 72;
-		available_keys[4] = 80;
-		available_keys[5] = 27;
+		available_keys[0] = KEY_LEFT;
+		available_keys[1] = KEY_RIGHT;
+		available_keys[2] = KEY_ENTER;
+		available_keys[3] = KEY_UP;
+		available_keys[4] = KEY_DOWN;
+		available_keys[5] = KEY_ESC;
 		available_keys[6] = 0;
 	}
 	else {
@@ -324,7 +322,7 @@ void Table::change_state(Table_states state)
 		}
 		if (state == searching)
 			change_page(-page_num);
-		wchar_t esc = 27;
+		wchar_t esc = KEY_ESC;
 		generate_available_letters(&available_keys);
 		wcsncat(available_keys, &esc, 1);
 		
@@ -361,7 +359,7 @@ void Table::print_row(int i)
 	int row = i % row_cnt;
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (i == chosen_row && show_chosen_row)
-		SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW | FOREGROUND_INTENSITY);
+		SetConsoleTextAttribute(hStdOut, FOREGROUND_YELLOW);
 	move_cursor_to_row_col(row, 0);
 	printf(" %d", i+1);
 	for (int j = 0; j < col_cnt-1; j++) {
@@ -370,7 +368,7 @@ void Table::print_row(int i)
 		cur_x += sizes[j];
 	}
 	if (i == chosen_row && show_chosen_row)
-		SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+		SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE);
 }
 
 void Table::move_cursor_to_row_col(int row, int col)
@@ -411,7 +409,7 @@ void Table::print_adding_row(int a_y)
 		else
 			printf(" %d", db->get_size()+1);
 		if (i == adding_counter + 1 || i == 0)
-			SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
+			SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE);
 	}
 }
 
@@ -428,7 +426,7 @@ void Table::print_error_message()
 	SetConsoleTextAttribute(hStdOut, FOREGROUND_RED);
 	printf("%ls", error_message);
 	wcscpy(error_message, L"");
-	SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE);
 }
 
 void Table::clear_adding_strings() 
@@ -478,9 +476,9 @@ Layout::Layout()
 	/*
 	Конструктор Layout
 	*/
-	available_keys[0] = 72; // KEY_UP 
-	available_keys[1] = 80; // KEY_DOWN 
-	available_keys[2] = 27; // ESC
+	available_keys[0] = KEY_UP; 
+	available_keys[1] = KEY_DOWN; 
+	available_keys[2] = KEY_ESC; 
 	available_keys[3] = 0;  // End of string for correct work
 }
 
@@ -527,13 +525,13 @@ void Layout::react(wchar_t key)
 	{
 		switch (key)
 		{
-		case 80: //down
+		case KEY_DOWN: 
 			change_swichable_object(1); // перелистывание вниз
 			break;
-		case 72: //up
+		case KEY_UP: 
 			change_swichable_object(-1); // перелистывание вверх
 			break;
-		case 27: // esc
+		case KEY_ESC:
 			fd->leave(); // вызов метода fd::leave для переключения на предыдущий layout
 			break;
 		default:

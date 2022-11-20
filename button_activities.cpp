@@ -7,8 +7,8 @@
     Описание функций, которые вызываются при взаимодествии с кнопками
 */
 
-#pragma once 
-#include "button_activities.h"
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include "button_activities.h" // Подключение заголовочного модуля button_activities.h
 
 void meeting_main(Frontend* fd) {
     /*
@@ -283,7 +283,7 @@ void save(Frontend* fd) {
         printf("Сохранение невозможно");
     }
     fd->wait();
-    SetConsoleTextAttribute(hStdOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+    SetConsoleTextAttribute(hStdOut, FOREGROUND_WHITE);
 
 }
 

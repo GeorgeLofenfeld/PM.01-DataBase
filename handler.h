@@ -7,9 +7,9 @@
 	Модуль в котором описаны классы, обрабатывающие входные данные
 */
 
-#pragma once
-#include <string.h>
-#include <stdio.h>
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include <string.h> // Работа со строками
+#include <stdio.h> // Standart Input Output
 
 class Key_handler // абстрактный класс
 {

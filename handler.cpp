@@ -7,8 +7,9 @@
 	Реализация функций из handler.h
 */
 
-#include "handler.h"
-#include <wchar.h>
+#include <wchar.h> // Wide char - широкий символ - работа с алфавитами
+#include "handler.h" // Подключение заголовочнго модуля handler.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 Int_char_handler::Int_char_handler(int maxlength, int int_ok, int char_ok, int can_be_empty) 
 {
@@ -41,8 +42,8 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 			wcscpy(error_string, L"Введено максимальное количество символов");
 	}
 	else {
-		if (c == 13) {
-			if (wcslen(handled_string) > 0 || can_be_empty) { // enter 
+		if (c == KEY_ENTER) {
+			if (wcslen(handled_string) > 0 || can_be_empty) { 
 				is_finished = 1; // ввод окончен
 				wcscpy(error_string, L"");
 			}
@@ -116,8 +117,8 @@ void Date_time_handler::handle(wchar_t c)
 		else
 			wcscpy(error_string, L"Недопустимая дата / время");
 	}
-	if (c == 8 && wcslen(handled_string) > 0) { // backspase key
-		handled_string[wcslen(handled_string) - 1] = '\0'; //delete last letter
+	if (c == KEY_BACKSPACE && wcslen(handled_string) > 0) { 
+		handled_string[wcslen(handled_string) - 1] = '\0'; // Удаляет последний символ
 		wcscpy(error_string, L"");
 	}
 	if (c == 13 && is_correct(handled_string, date_or_time_handling)) {
@@ -156,7 +157,7 @@ wchar_t* Date_time_handler::format(wchar_t* s)
 
 void Bool_handler::handle(wchar_t c)
 {
-	if (c == 72 || c == 80) { //72 KEY_UP 80 KEY_DOWN
+	if (c == KEY_UP || c == KEY_DOWN) { 
 		state = (state + 1) % 2; // флаг разрешенности, может иметь значение 1 или 0
 		if (state == 1)
 			wcscpy(handled_string, L"ДА");
@@ -165,7 +166,7 @@ void Bool_handler::handle(wchar_t c)
 		wcscpy(error_string, L""); // чистим отображение об ошибке если всё успешно
 	}
 	else { 
-		if (c == 13) { // если нажатая клавиша enter
+		if (c == KEY_ENTER) { // если нажатая клавиша enter
 			is_finished = 1; // ввод закончен
 			wcscpy(error_string, L""); // очистили строку с ошибкой 
 		}

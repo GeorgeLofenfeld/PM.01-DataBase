@@ -7,7 +7,7 @@
 	Реализация функций из database.h, относящихся к работе с базой данных в оперативной памяти
 */
 
-#include "database.h"
+#include "database.h" // Подключение заголовочного модуля database.h
 
 void mem_check_err() {
 	/*

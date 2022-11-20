@@ -7,16 +7,14 @@
 	Модуль, реализующий визуальную часть приложения, взаимодействие с пользователем
 */
 
-#pragma once
-#include <string.h>
+#pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
+#include <string.h> // Работа со строками
 #include <windows.h> // Работа с графикой
-#include <stdio.h>
-#include <conio.h> // console input output
-#include "database.h"
-#include "handler.h"
-
-#define FOREGROUND_WHITE (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED) // определяем белый цвет
-#define BACKGROUND_WHITE (BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED)
+#include <stdio.h> // Standart Input Output
+#include <conio.h> // Сonsole Input Output
+#include "database.h" // Подключение заголовочного модуля database.h
+#include "handler.h" // Подключение заголовочного модуля handler.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 void move_cursor_to(int x, int y);
 

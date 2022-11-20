@@ -7,11 +7,11 @@
 	Реализация функций из database.h, относящихся к работе с файлом
 */
 
-#include <stdio.h>
-#include "database.h"
-#include <wchar.h> // wide char - широкий символ - работа с алфавитами
-#include "frontend.h"
-#define _CRT_NON_CONFORMING_WCSTOK // Нужно для работы функции wcstok 
+#include <stdio.h> // Standart Input Output
+#include <wchar.h> // Wide char - широкий символ - работа с алфавитами
+#include "database.h" // Подключение заголовочного модуля databse.h
+#include "frontend.h" // Подключение заголовочного модуля frontend.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 
 Base_operator::Base_operator(char* path, Database** dbs, int base_cnt, base_type* base_types) {

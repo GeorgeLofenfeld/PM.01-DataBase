@@ -8,16 +8,16 @@
 */
 
 #pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
-#include <string.h> // работа со строками
+#include <string.h> // Работа со строками
 #include <cstdlib> // Выделение памяти, контроль процесса выполнения программы, преобразование типов
 #include <time.h> // Использование встроенной структуры tm 
-#include <stdio.h> // standart input output
+#include <stdio.h> // Standart Input Output
 
-void mem_check_err();
+void mem_check_err(); // Объявление функции вывода сообщения об ошибке при неудачном выделении памяти и выхода из программы
 
-class Base_operator;
+class Base_operator; // Объявляем необходимый класс заранее, опишем позже
 
-enum base_type { meetings, declarers, offences, error };
+enum base_type { meetings, declarers, offences, error }; // Перечисляемый тип
 
 class Database_record // Виртуальный класс, описывающий абстрактный элемент базы данных
 {
