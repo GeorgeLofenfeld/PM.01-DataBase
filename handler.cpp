@@ -21,8 +21,8 @@ Int_char_handler::Int_char_handler(int maxlength, int int_ok, int char_ok, int c
 	*/
 	this->maxlength = maxlength; 
 	if (int_ok && !char_ok)
-		if (maxlength > 9)
-			this->maxlength = 9;
+		if (maxlength > MAX_STR_TO_INT_SIZE)
+			this->maxlength = MAX_STR_TO_INT_SIZE;
 	this->int_ok = int_ok;
 	this->char_ok = char_ok; 
 	this->can_be_empty = can_be_empty;
@@ -50,7 +50,7 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 			else
 				wcscpy(error_string, L"Строка не может быть пуста");
 		}
-		else if (c == 8 && wcslen(handled_string) > 0) { // backspase 
+		else if (c == KEY_BACKSPACE && wcslen(handled_string) > 0) { // backspase 
 			handled_string[wcslen(handled_string) - 1] = '\0'; // удалить последний символ
 			wcscpy(error_string, L"");
 		}
@@ -59,8 +59,8 @@ void Int_char_handler::handle(wchar_t c) // обработка полученного символа
 	}
 }
 
-int is_correct(wchar_t* s, int date_or_time) { // в разработке
-	if (wcslen(s) != 6)
+int is_correct(wchar_t* s, int date_or_time) { 
+	if (wcslen(s) != DATE_TIME_STR_SIZE)
 		return 0;  
 	wchar_t s_divided[3][3] = { L"",L"",L"" };
 	for (int i = 0; i < 3; i++) {
@@ -101,7 +101,7 @@ int is_correct(wchar_t* s, int date_or_time) { // в разработке
 void Date_time_handler::handle(wchar_t c)
 {
 	if (date_or_time_handling) { 
-		if (wcslen(handled_string) < 6 && ('0' <= c) && (c <= '9')) {
+		if (wcslen(handled_string) < DATE_TIME_STR_SIZE && ('0' <= c) && (c <= '9')) {
 			wcsncat(handled_string, &c, 1);
 			wcscpy(error_string, L"");
 		}
@@ -110,7 +110,7 @@ void Date_time_handler::handle(wchar_t c)
 	}
 	else
 	{
-		if (wcslen(handled_string) < 6 && ('0' <= c) && (c <= '9')) {
+		if (wcslen(handled_string) < DATE_TIME_STR_SIZE && ('0' <= c) && (c <= '9')) {
 			wcsncat(handled_string, &c, 1);
 			wcscpy(error_string, L"");
 		}
@@ -121,7 +121,7 @@ void Date_time_handler::handle(wchar_t c)
 		handled_string[wcslen(handled_string) - 1] = '\0'; // Удаляет последний символ
 		wcscpy(error_string, L"");
 	}
-	if (c == 13 && is_correct(handled_string, date_or_time_handling)) {
+	if (c == KEY_ENTER && is_correct(handled_string, date_or_time_handling)) {
 		is_finished = 1;
 		wcscpy(error_string, L"");
 	}

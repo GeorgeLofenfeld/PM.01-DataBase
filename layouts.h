@@ -18,7 +18,7 @@ Layout* create_menu_layout() {
     Сборка и создание menu layout
     */
     static Layout main_menu = Layout();
-    wchar_t names[9][128] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
+    wchar_t names[9][MAX_STR_SIZE] = { L"БАЗА ДАННЫХ МИТИНГОВ", L"МЕНЮ", L"Митинги",
         L"Заявители", L"Правонарушения", L"Сохранить", L"Выйти", L"ВВЕРХ / ВНИЗ: Переключение пункта меню\nENTER: Выбор пункта меню", L"Лофенфельд Георгий\nПКС-303"};
     static Text texts[4] = { Text(5, 3, names[0]), Text(5, 5, names[1]), Text(0, 39, names[7], FOREGROUND_TURQUOISE), Text(0, 47, names[8], FOREGROUND_YELLOW)};
     static Button buttons[5] = {
@@ -44,7 +44,7 @@ Layout* create_meetings_layout(Database *db) {
     Принимает ссылку на Database (конкретную базу данных)
     */
     static Layout meetings = Layout();
-    wchar_t names[28][1024] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
+    wchar_t names[28][MAX_STR_SIZE] = { L"ТАБЛИЦА МИТИНГОВ", L"Установите режим:", L"Сортировка",
         L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
         L"Дате", L"Времени", L"Количеству заявленных участников", L"Количеству фактических участников", L"Разрешению", L"Назад",
         L"ДАТА", L"ВРЕМЯ", L"КОЛ. ЗАЯВ. УЧАСТН.", L"КОЛ. ФАКТ. УЧАСТН.",
@@ -69,7 +69,7 @@ Layout* create_meetings_layout(Database *db) {
         Button(136, 3, names[12],meeting_sort),
         Button(158, 3, names[13],meeting_main), 
     };
-    wchar_t table_names[20][128] = {};
+    wchar_t table_names[20][MAX_STR_SIZE] = {};
     int sizes[7] = { 10, 10, 21, 21, 60, 60, 13 };
     static Date_time_handler dth[2] = { Date_time_handler(1), Date_time_handler(0) };
     static Int_char_handler ich[4] = { 
@@ -99,7 +99,7 @@ Layout* create_declarers_layout(Database* db) {
     Принимает ссылку на Database (конкретную базу данных)
     */
     static Layout declarers = Layout();
-    wchar_t names[18][128] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
+    wchar_t names[18][MAX_STR_SIZE] = { L"ТАБЛИЦА ЗАЯВИТЕЛЕЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:", 
     L"ФИО", L"Нарушениям", L"Назад", L"ФИО ЗАЯВИТЕЛЯ", L"НАЛИЧИЕ НАРУШЕНИЙ", 
         L"ВВЕРХ / ВНИЗ: Переключение режима таблицы / сотировки / строки при удалении, редактировании / правонарушений", L"ВЛЕВО / ВПРАВО: Переключение страницы", 
@@ -117,7 +117,7 @@ Layout* create_declarers_layout(Database* db) {
         Button(29, 3, names[9], declarers_sort),
         Button(51, 3, names[10],declarers_main)
     };
-    wchar_t table_names[20][128] = {};
+    wchar_t table_names[20][MAX_STR_SIZE] = {};
     int sizes[2] = { 60, 20 };
     static Int_char_handler ich =  Int_char_handler(sizes[0],0,1);
     static Bool_handler bh = Bool_handler();
@@ -145,7 +145,7 @@ Layout* create_offences_layout(Database* db) {
     Принимает ссылку на Database (конкретную базу данных)
     */
     static Layout offences = Layout();
-    wchar_t names[24][128] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
+    wchar_t names[24][MAX_STR_SIZE] = { L"ТАБЛИЦА ПРАВОНАРУШЕНИЙ", L"Установите режим:", L"Сортировка",
     L"Добавление", L"Редактирование", L"Удаление", L"Поиск", L"Сортировать по:",
     L"Митингам", L"ФИО Нарушителя",  L"Нормативному акту", L"Статье и пункту", L"Флагу осуждения судом",
     L"Назад", L"МИТИНГ",L"ФИО НАРУШИТЕЛЯ", L"НОРМАТИВНЫЙ АКТ", L"СТАТЬЯ И ПУНКТ", L"ОСУЖДЕНИЕ СУДОМ", 
@@ -167,7 +167,7 @@ Layout* create_offences_layout(Database* db) {
         Button(89, 3, names[12], offences_sort),
         Button(122, 3, names[13],offences_main)
     }; 
-    wchar_t table_names[20][128] = {}; // названия столбцов
+    wchar_t table_names[20][MAX_STR_SIZE] = {}; // названия столбцов
     int sizes[5] = { 50, 50, 50, 30, 18}; // размеры столбцов
     static Int_char_handler ich[4] =
     { Int_char_handler(sizes[0], 1, 1),

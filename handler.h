@@ -10,6 +10,7 @@
 #pragma once // Чтобы конкретный исходный файл при компиляции подключался строго один раз
 #include <string.h> // Работа со строками
 #include <stdio.h> // Standart Input Output
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 class Key_handler // абстрактный класс
 {
@@ -25,8 +26,8 @@ public:
 	virtual void clear() { is_finished = 0; wcscpy(handled_string, L""); } // очистить полученную строку после ввода и установить законченность на ноль
 protected:
 	int is_finished = 0;
-	wchar_t handled_string[128] = L""; // ввод с клавиатуры
-	wchar_t error_string[128] = L""; // текст ошибки
+	wchar_t handled_string[MAX_STR_SIZE] = L""; // ввод с клавиатуры
+	wchar_t error_string[MAX_STR_SIZE] = L""; // текст ошибки
 };
 
 class Int_char_handler : public Key_handler // обработка цифр и (или) букв в зависимости от параметров
@@ -38,7 +39,7 @@ public:
 private:
 	int int_ok = 1;
 	int char_ok = 1;
-	int maxlength = 100;
+	int maxlength = MAX_STR_SIZE;
 	int can_be_empty = 0;
 };
 
@@ -60,7 +61,7 @@ public:
 private:
 	int date_or_time_handling = 1;// 1 if date
 	wchar_t* format(wchar_t* s); // получает строку и форматирует (прим. 26.10.22 или 14:25:00)
-	wchar_t f_s[128] = {}; // format_string для хранения отформатированной строки
+	wchar_t f_s[MAX_STR_SIZE] = {}; // format_string для хранения отформатированной строки
 };
 
 class Bool_handler : public Key_handler // для обработки флага 

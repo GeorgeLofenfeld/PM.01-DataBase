@@ -12,7 +12,7 @@
 #include "constants.h" // ѕодключение заголовочного модул€ constants.h
 
 void move_cursor_to(int x, int y) {
-	/*
+	/* 
 	ѕеремещает каретку консоли в точку с координатами (x;y)
 	***
 	ѕринимает целочисленные координаты x и y
@@ -110,7 +110,7 @@ void Button::react(wchar_t key)
 		action(lt->get_frontend()); // вызываем action от Frontned'a которому принадлежит layout, которому принадлежит layout_object
 }
 
-Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database* db)
+Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[MAX_COL_COUNT][MAX_STR_SIZE], int *sizes, Database* db)
 {
 	/*
 	 онструктор элемента Table
@@ -126,7 +126,7 @@ Table::Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t 
 	this->col_cnt = col_cnt+1;
 	wcscpy(this->caption, caption);
 	wcscpy(this->names[0], L"є");
-	this->sizes[0] = 8;
+	this->sizes[0] = DEFAULT_COL_SIZE;
 	this->db = db;
 	for (int i = 0; i < col_cnt; i++) {
 		wcscpy(this->names[i+1], names[i]);
@@ -434,7 +434,7 @@ void Table::clear_adding_strings()
 	/*
 	ќчищение буфера добавл€емой строки 
 	*/
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_COL_COUNT; i++)
 		wcscpy(adding_strings[i], L"");
 }
 
@@ -501,14 +501,14 @@ wchar_t* Layout::get_available_keys()
 	***
 	¬озвращает массив доступных клавиш у текущего layout
 	*/
-	static wchar_t keys[1000]; // массив дл€ доступных клавиш клавиатуры
+	static wchar_t keys[MAX_AVAILABLE_KEYS_COUNT * MAX_LAYOUT_OBJECTS_COUNT]; // массив дл€ доступных клавиш клавиатуры
 	wcscpy(keys, available_keys); // strcpy(x, y), available_keys - клавиши доступные дл€ самого layout'a
 	if (chosen_index != -1) { // chose_index - индекс выбранного объекта
-		wcsncat(keys, objects[chosen_index]->get_available_keys(), 300); // добавили доступные клавиши дл€ выбранного layout_object
+		wcsncat(keys, objects[chosen_index]->get_available_keys(), MAX_AVAILABLE_KEYS_COUNT); // добавили доступные клавиши дл€ выбранного layout_object
 	}
 	for (int i = 0; i < object_cnt; i++) // итерируемс€ по всем объектам данного layout'a
 		if (objects[i]->get_is_background() && i != chosen_index) // get_is_background - метод класса layout_object, может ли данный объект реагировать на клавиши не будучи выбранным
-			wcsncat(keys, objects[i]->get_available_keys(), 300); // добавили доступные клавиши дл€ выбранного layout_object
+			wcsncat(keys, objects[i]->get_available_keys(), MAX_AVAILABLE_KEYS_COUNT); // добавили доступные клавиши дл€ выбранного layout_object
 	return keys; // возвращаем массив доступных клавиш клавиатуры
 }
 

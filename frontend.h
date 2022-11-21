@@ -29,7 +29,7 @@ class Layout_object // Абстракция объекта layout'a, все остальные объекты наслед
 {
 public:
 	Layout_object() { 
-		available_keys = (wchar_t*)malloc(300 * sizeof(wchar_t)); wcscpy(available_keys, L""); 
+		available_keys = (wchar_t*)malloc(MAX_AVAILABLE_KEYS_COUNT * sizeof(wchar_t)); wcscpy(available_keys, L"");
 		if (available_keys == NULL) {
 			printf("Ошибка выделения памяти");
 			_Exit(EXIT_FAILURE);
@@ -63,7 +63,7 @@ protected:
 	int swiched = 0; // если выбран данный layout_object 
 	wchar_t *available_keys; 
 	Layout* lt = 0; // ссылка на тот layout, в котором содержится layout_object 
-	wchar_t caption[100] = {}; // название layout_object'a
+	wchar_t caption[MAX_STR_SIZE] = {}; // название layout_object'a
 	int visible = 1; // видимость layout_object'a (может реагировать если не видим, остается в списке объектов layout'a)
 	int saved_state[2]={is_swichable, visible}; // перед деактивацией сохраняем состояние 
 	void save_state() { // метод для сохранения состояния
@@ -100,7 +100,7 @@ class Table : public Layout_object
 {
 public:
 	enum Table_states{adding,deleting,changing, choosing_for_changing,neutral, searching}; // состояние таблицы может быть только одно из них
-	Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[20][128], int *sizes, Database *db);
+	Table(int x, int y, int row_cnt, int col_cnt, wchar_t caption[], wchar_t names[MAX_COL_COUNT][MAX_STR_SIZE], int *sizes, Database *db);
 	void set_i_handler(int i, Key_handler* h) { handlers[i] = h; } // установить i-тый handler
 	~Table() {};
 	void print(); // отрисовать саму таблицу
@@ -109,13 +109,13 @@ public:
 	void change_page(int delta);
 	Database* get_database() { return db; };
 private:
-	Key_handler* handlers[20]; // обработчики столбцов
+	Key_handler* handlers[MAX_COL_COUNT]; // обработчики столбцов
 	int x = 0;
 	int y = 0;
-	int row_cnt = 20; // количество строк на странице
-	int col_cnt = 20; 
-	wchar_t names[20][128]; // названия столбцов
-	int sizes[20]; // размеры столбцов
+	int row_cnt = 1; // Количество строк на странице
+	int col_cnt = MAX_COL_COUNT;
+	wchar_t names[MAX_COL_COUNT][MAX_STR_SIZE]; // названия столбцов
+	int sizes[MAX_COL_COUNT]; // размеры столбцов
 	int page_num = 0; // номер текущей страницы
 	Database* db = NULL; // ссылка на БД
 	void print_row(int i); // метод отрисовки строки
@@ -129,10 +129,10 @@ private:
 	int show_chosen_row = 0; // выделение выбранной строки
 	Table_states state = neutral; // состояние таблицы, может принять значение только из перечисления enum Table_states
 	int adding_counter = 0; // номер текущего столбца в добавляемой строке 
-	wchar_t adding_strings[20][128]; // буфер введенных строк для новой записи
-	wchar_t error_message[128]; // для хранения сообщений об какой-либо ошибке 
+	wchar_t adding_strings[MAX_COL_COUNT][MAX_STR_SIZE]; // Буфер введенных строк для новой записи
+	wchar_t error_message[MAX_STR_SIZE]; // для хранения сообщений об какой-либо ошибке 
 	Int_char_handler search_handler = Int_char_handler(50,1,1); // handler Для оработки запроса на поиск 
-	wchar_t search_string[128]; // для хранения запроса на поиск
+	wchar_t search_string[MAX_STR_SIZE]; // для хранения запроса на поиск
 };
 class Layout
 {
@@ -155,8 +155,8 @@ public:
 private:
 	Frontend* fd;
 	int chosen_index = -1;
-	wchar_t available_keys[100];
-	Layout_object* objects[100];
+	wchar_t available_keys[MAX_AVAILABLE_KEYS_COUNT];
+	Layout_object* objects[MAX_LAYOUT_OBJECTS_COUNT];
 	int object_cnt = 0;
 	int prev_layout_idx = 0;
 };
@@ -166,7 +166,6 @@ class Key_reader
 public:
 	Key_reader() {};
 	~Key_reader() {};
-	//wchar_t read();
 	wchar_t read(wchar_t* keys);
 
 private:
@@ -187,7 +186,7 @@ public:
 	void wait();
 private:
 	Key_reader reader;
-	Layout *layouts[10]; // Список всех вёрсток (меню, таблицы)
+	Layout *layouts[MAX_LAYOYTS_COUNT]; // Список всех вёрсток (меню, таблицы)
 	int current_layout_idx = 0;
 	int exit = 0;
 	void clear_screen();

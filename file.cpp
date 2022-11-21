@@ -60,7 +60,7 @@ base_type str_to_bt(char* str) {
 	***
 	Возвращает тип базы данных в виде base_type
 	*/
-	char strs[3][10] = { "meetings", "declarers", "offences" };
+	char strs[3][MAX_STR_SIZE] = { "meetings", "declarers", "offences" };
 	base_type bts[4] = { meetings, declarers, offences, error };
 	for (int i = 0; i < 3; i++)
 		if (strcmp(str, strs[i]) == 0)
@@ -75,7 +75,7 @@ char* bt_to_str(base_type bt) {
 	***
 	Возвращает строку
 	*/
-	static char strs[3][10] = { "meetings", "declarers", "offences" };
+	static char strs[3][MAX_STR_SIZE] = { "meetings", "declarers", "offences" };
 	base_type bts[3] = { meetings, declarers, offences};
 	for (int i = 0; i < 3; i++)
 		if (bts[i] == bt)
@@ -92,7 +92,7 @@ void Base_operator::initializate()
 	информация о пустых базах данных
 	*/
 	FILE* in;
-	char base_type_str[10] = "";
+	char base_type_str[MAX_STR_SIZE] = "";
 	int base_size = 0;
 	in = fopen(path, "r");
 	if (in) {
@@ -212,24 +212,24 @@ Database_record* Base_operator::read(FILE* in, base_type bt) {
 	Возвращает ссылку на преобразованную из строки запись базы данных
 	*/
 	Database_record* answer = NULL;
-	wchar_t line[2560] = {};
-	wchar_t words[20][128] = {};
+	wchar_t line[MAX_STR_SIZE * MAX_COL_COUNT] = {};
+	wchar_t words[MAX_COL_COUNT][MAX_STR_SIZE] = {};
 	wchar_t delim[] = L"|";
-	fgetws(line, 2560, in);
+	fgetws(line, MAX_STR_SIZE * MAX_COL_COUNT, in);
 	wchar_t* rowstate = 0;
 	line[wcslen(line) - 1] = 0;// Удаляем \n
 	wchar_t* ptr = wcstok_s(line, delim,&rowstate);
 	int cnt = 0;
 	while (ptr != NULL)
 	{	
-		wcsncpy(words[cnt], ptr, 128); // Копируем строку до ближайшего разделителя ( | )
+		wcsncpy(words[cnt], ptr, MAX_STR_SIZE); // Копируем строку до ближайшего разделителя ( | )
 		ptr = wcstok_s(NULL, delim, &rowstate); // Передвигаем указатель на следующий разделитель
 		cnt++;
 	}
 	return this->add(words, bt);
 }
 
-Database_record* Base_operator::add(wchar_t words[20][128], base_type bt) {
+Database_record* Base_operator::add(wchar_t words[MAX_COL_COUNT][MAX_STR_SIZE], base_type bt) {
 	/*
 	Сохранение новой записи в оперативной памяти
 	***

@@ -8,6 +8,7 @@
 */
 
 #include "database.h" // Подключение заголовочного модуля database.h
+#include "constants.h" // Подключение заголовочного модуля constants.h
 
 void mem_check_err() {
 	/*
@@ -25,7 +26,7 @@ Database::Database(int cnt)
 	Принимает начальный размер базы данных 
 	*/
 	this->cnt = cnt;
-	list_size = cnt > 5 ? (cnt + cnt / 2) : 10;
+	list_size = cnt > 5 ? (cnt + cnt / 2) : DEFAULT_DBS_SIZE;
 	base = (Database_record**)malloc(list_size * sizeof(Database_record*));
 	base[0] = NULL; 
 	if (base == NULL) {
@@ -54,7 +55,7 @@ void Database::delete_record(int i)
 	cnt -= 1;
 }
 
-void Database::change_record(int i, wchar_t str[20][128])
+void Database::change_record(int i, wchar_t str[MAX_COL_COUNT][MAX_STR_SIZE])
 {
 	/*
 	Изменение записи по индексу 
@@ -95,7 +96,7 @@ void Database::add_record(Database_record* rec) {
 	base[cnt] = NULL;
 }
 
-void Database::add_record(wchar_t str[20][128])
+void Database::add_record(wchar_t str[MAX_COL_COUNT][MAX_STR_SIZE])
 {
 	/*
 	Добавление записи в виде строкового представления.
@@ -126,8 +127,8 @@ wchar_t* Database_record::to_file_line()
 	wchar_t** str = this->to_string(1);
 	wcsncpy(line, L"", 2);
 	for (int i = 0; i < field_cnt; i++) {
-		wcsncat(line, str[i], 300);
-		wcsncat(line, L"|", 300);
+		wcsncat(line, str[i], MAX_STR_SIZE * 2);
+		wcsncat(line, L"|", MAX_STR_SIZE * 2);
 	}
 	return line;
 }
@@ -148,12 +149,12 @@ void Database_record::malloc_strings()
 	/*
 	Выделение памяти под буфер для строкового представления записи database_record'a
 	*/
-	strings = (wchar_t**)malloc(20 * sizeof(wchar_t*));
+	strings = (wchar_t**)malloc(MAX_COL_COUNT * sizeof(wchar_t*));
 	if (strings == NULL) {
 		mem_check_err();
 	}
-	for (int i = 0; i < 20; i++) {
-		strings[i] = (wchar_t*)malloc(128 * sizeof(wchar_t));
+	for (int i = 0; i < MAX_COL_COUNT; i++) {
+		strings[i] = (wchar_t*)malloc(MAX_STR_SIZE * sizeof(wchar_t));
 		if (strings[i] == NULL) {
 			mem_check_err();
 		}
@@ -165,21 +166,28 @@ void Database_record::free_strings()
 	/*
 	Освобождение памяти от буфера строкового представления записи database_record'a
 	*/
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < MAX_COL_COUNT; i++)
 		free(strings[i]);
 	free(strings);
 }
 
 wchar_t** Database_meetings_record::to_string(int is_file_format)
 {
-	// Перевод в массив строк
-	swprintf(strings[0], 50, L"%02d.%02d.%02d", date.tm_mday, date.tm_mon, date.tm_year);
-	swprintf(strings[1], 50, L"%02d:%02d:%02d", date.tm_hour, date.tm_min, date.tm_sec);
-	swprintf(strings[2], 50, L"%d", declared_cnt);
+	/*
+	Перевод полей объекта database_record в массив строк
+	***
+	Принимает флаг формата файла (если 0, то формат табличный, иначе файловый), если формат табличный, 
+	то на месте пустой строки - пустая строка, иначе -1
+	***
+	Возвращает массив строковых представлений полей записи
+	*/
+	swprintf(strings[0], MAX_STR_SIZE, L"%02d.%02d.%02d", date.tm_mday, date.tm_mon, date.tm_year);
+	swprintf(strings[1], MAX_STR_SIZE, L"%02d:%02d:%02d", date.tm_hour, date.tm_min, date.tm_sec);
+	swprintf(strings[2], MAX_STR_SIZE, L"%d", declared_cnt);
 	if (!is_file_format && real_cnt == -1)
 		wcscpy(strings[3], L"");
 	else
-		swprintf(strings[3], 50, L"%d", real_cnt);
+		swprintf(strings[3], MAX_STR_SIZE, L"%d", real_cnt);
 	wcscpy(strings[4], address);
 	wcscpy(strings[5], declarers);
 	if (permitted)
@@ -189,9 +197,13 @@ wchar_t** Database_meetings_record::to_string(int is_file_format)
 	return strings;
 }
 
-void Database_meetings_record::from_string(wchar_t str[20][128])
+void Database_meetings_record::from_string(wchar_t str[MAX_COL_COUNT][MAX_STR_SIZE])
 {
-	// Перевод из массива строк
+	/*
+	Перевод из строкового представления полей записи в поля записи
+	***
+	Принимает строковое представление полей записи
+	*/
 	swscanf(str[0], L"%d.%d.%d", &date.tm_mday, &date.tm_mon, &date.tm_year);
 	swscanf(str[1], L"%d:%d:%d", &date.tm_hour, &date.tm_min, &date.tm_sec);
 	swscanf(str[2], L"%d", &declared_cnt);
@@ -209,7 +221,15 @@ void Database_meetings_record::from_string(wchar_t str[20][128])
 
 int Database_meetings_record::compare(Database_record* y, int index)
 {
-	// Сравнение текущей записи с записью y по полю под индексом index
+	/*
+	Сравнение текущей записи с записью y по полю под индексом index (нужно для сортировки и поиска) 
+	***
+	Принимает индекс (номер поля по которому происходит сравнение), если индекс = -1, 
+	то сравнение происходит по наличию искомой в поиске строке.
+	y - запись, с которой происходит сравнение
+	***
+	Возвращает единицу если текущее больше чем y, по проведенному сравнению, иначе ноль
+	*/
 	Database_meetings_record* y_m = (Database_meetings_record*)y;
 	struct tm d1 = this->date;
 	struct tm d2 = y_m->date;
@@ -290,13 +310,26 @@ int Database_declarers_record::compare(Database_record* y, int index)
 }
 
 void swap_record(Database_record** a, Database_record** b) {
-	// Меняет значениями 
+	/*
+	Меняет местами значения a и b (ссылки на записи в данном контексте)
+	***
+	Принимает ссылки на записи
+	*/
 	Database_record* t = *a;
 	*a = *b;
 	*b = t;
 }
 
 int partition(Database_record*** array, int index, int low, int high) {
+	/*
+	Из массива выбирается некоторый опорный элемент pivot, запускается процедура разделения массива, 
+	которая перемещает все ключи, меньшие, либо равные pivot, влево от него, а все ключи, большие, либо равные pivot - вправо,
+	***
+	Принимает ссылку на массив ссылок array, индекс (номер поля записи / иначе если индекс -1, то сортировка по наличию искомой подстроки)
+	по которому идет сортировка index, левую и правую границы массива, в пределах которых происходит данный этап рекурсии low | high
+	***
+	Возвращает индекс опорного элемента
+	*/
 	Database_record* pivot = (*array)[high];
 	int i = (low - 1);
 	for (int j = low; j < high; j++) {
@@ -310,6 +343,11 @@ int partition(Database_record*** array, int index, int low, int high) {
 }
 
 void quickSort(Database_record*** array, int index, int low, int high) {
+	/*
+	Рекурсивная функция быстрой сортировки
+	***
+	Принимает ...
+	*/
 	if (low < high) {
 		int pi = partition(array, index, low, high);
 		quickSort(array, index, low, pi - 1);
