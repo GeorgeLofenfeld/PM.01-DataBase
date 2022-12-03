@@ -1,10 +1,9 @@
 .vscode
 Debug/
 x64/
-test_db
+Data_base_file
 *.vcxproj*
 DataBase.sln
 *.swp
 *.rar
 .vs/
-ConsoleApplication.cpp
